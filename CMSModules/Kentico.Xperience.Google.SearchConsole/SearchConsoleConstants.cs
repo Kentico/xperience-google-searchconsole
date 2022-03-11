@@ -7,7 +7,7 @@ namespace Kentico.Xperience.Google.SearchConsole
         public const string OAUTH_CALLBACK = "google/oauth/callback";
 
 
-        public const string TOKEN_CALLBACK = "CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/SearchConsoleAuthorizationCallback.aspx";
+        public const string TOKEN_CALLBACK = "CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthAuthorizationFinished.aspx";
 
 
         public const string CREDENTIALS_FILENAME = "client_secret.json";

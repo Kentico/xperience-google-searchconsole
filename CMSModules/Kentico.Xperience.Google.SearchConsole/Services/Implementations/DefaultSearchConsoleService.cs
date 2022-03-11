@@ -14,10 +14,10 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 
-[assembly: RegisterImplementation(typeof(IGoogleSearchConsoleService), typeof(DefaultGoogleSearchConsoleService), Lifestyle = Lifestyle.Singleton, Priority = RegistrationPriority.SystemDefault)]
+[assembly: RegisterImplementation(typeof(ISearchConsoleService), typeof(DefaultSearchConsoleService), Lifestyle = Lifestyle.Singleton, Priority = RegistrationPriority.SystemDefault)]
 namespace Kentico.Xperience.Google.SearchConsole.Services
 {
-    public class DefaultGoogleSearchConsoleService : IGoogleSearchConsoleService
+    public class DefaultSearchConsoleService : ISearchConsoleService
     {
         private GoogleAuthorizationCodeFlow mFlow;
         private ISettingsService settingsService;
@@ -37,7 +37,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         }
 
 
-        public DefaultGoogleSearchConsoleService(ISettingsService settingsService)
+        public DefaultSearchConsoleService(ISettingsService settingsService)
         {
             this.settingsService = settingsService;
             /*UserCredential credential;

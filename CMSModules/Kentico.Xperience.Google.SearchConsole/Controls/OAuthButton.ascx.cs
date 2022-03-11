@@ -11,13 +11,29 @@ using System.Web.UI;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
-    public partial class GoogleOAuthButton : UserControl
+    public partial class OAuthButton : UserControl
     {
+        private ISearchConsoleService searchConsoleService;
+
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            var searchConsoleService = Service.Resolve<IGoogleSearchConsoleService>();
+            searchConsoleService = Service.Resolve<ISearchConsoleService>();
+            if (searchConsoleService.GetAccessToken() == null)
+            {
+                InitButton();
+            }
+            else
+            {
+                pnlMain.Visible = false;
+            }
+        }
+
+
+        private void InitButton()
+        {
             var domainWithProtocol = $"{RequestContext.CurrentScheme}://{RequestContext.CurrentDomain}";
             var auth = new AuthorizationCodeWebApp(searchConsoleService.GoogleAuthorizationCodeFlow, $"{domainWithProtocol}/{SearchConsoleConstants.OAUTH_CALLBACK}", Guid.NewGuid().ToString());
             var result = auth.AuthorizeAsync("user", new System.Threading.CancellationToken()).ConfigureAwait(false).GetAwaiter().GetResult();

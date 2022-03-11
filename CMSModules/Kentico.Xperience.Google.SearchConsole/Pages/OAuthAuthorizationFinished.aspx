@@ -1,5 +1,5 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" Title="Google authentication" MasterPageFile="~/CMSMasterPages/UI/SimplePage.master" CodeBehind="SearchConsoleAuthorizationCallback.aspx.cs"
-    Inherits="Kentico.Xperience.Google.SearchConsole.Pages.SearchConsoleAuthorizationCallback" Theme="Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" Title="Google authentication" MasterPageFile="~/CMSMasterPages/UI/SimplePage.master" CodeBehind="OAuthAuthorizationFinished.aspx.cs"
+    Inherits="Kentico.Xperience.Google.SearchConsole.Pages.OAuthAuthorizationFinished" Theme="Default" %>
 
 <asp:Content ID="cntMain" ContentPlaceHolderID="plcContent" runat="Server" EnableViewState="false">
     <asp:Panel ID="pnlSuccess" runat="server">

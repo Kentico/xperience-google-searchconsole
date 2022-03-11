@@ -11,7 +11,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
 
 
-    public partial class SearchConsoleAuthorizationCallback
+    public partial class OAuthAuthorizationFinished
     {
 
         /// <summary>

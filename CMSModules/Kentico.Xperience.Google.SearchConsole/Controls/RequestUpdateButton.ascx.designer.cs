@@ -11,16 +11,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
 
 
-    public partial class GoogleOAuthButton
+    public partial class RequestUpdateButton
     {
 
         /// <summary>
-        /// btnAuth control.
+        /// btnSubmit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.Base.Web.UI.LocalizedButton btnAuth;
+        protected global::System.Web.UI.WebControls.Button btnSubmit;
     }
 }

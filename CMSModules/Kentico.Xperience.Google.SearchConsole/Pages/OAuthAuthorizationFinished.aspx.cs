@@ -5,7 +5,7 @@ using System;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
-    public partial class SearchConsoleAuthorizationCallback : CMSModalPage
+    public partial class OAuthAuthorizationFinished : CMSModalPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {

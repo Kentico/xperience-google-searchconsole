@@ -20,7 +20,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controllers
         {
             var success = false;
             var message = String.Empty;
-            var searchConsoleService = Service.Resolve<IGoogleSearchConsoleService>();
+            var searchConsoleService = Service.Resolve<ISearchConsoleService>();
 
             var code = QueryHelper.GetString("code", String.Empty);
             var domainWithProtocol = $"{CMS.Helpers.RequestContext.CurrentScheme}://{CMS.Helpers.RequestContext.CurrentDomain}";

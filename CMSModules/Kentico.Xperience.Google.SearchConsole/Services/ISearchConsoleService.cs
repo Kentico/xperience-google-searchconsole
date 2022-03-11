@@ -3,7 +3,7 @@ using Google.Apis.Auth.OAuth2.Responses;
 
 namespace Kentico.Xperience.Google.SearchConsole.Services
 {
-    public interface IGoogleSearchConsoleService
+    public interface ISearchConsoleService
     {
         GoogleAuthorizationCodeFlow GoogleAuthorizationCodeFlow
         {
