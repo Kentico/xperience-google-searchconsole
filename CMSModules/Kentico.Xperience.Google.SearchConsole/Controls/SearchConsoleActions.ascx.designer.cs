@@ -11,8 +11,26 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
 
 
-    public partial class RequestUpdateButton
+    public partial class SearchConsoleActions
     {
+
+        /// <summary>
+        /// drpMode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::CMS.Base.Web.UI.CMSDropDownList drpMode;
+
+        /// <summary>
+        /// drpAction control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::CMS.Base.Web.UI.CMSDropDownList drpAction;
 
         /// <summary>
         /// btnSubmit control.

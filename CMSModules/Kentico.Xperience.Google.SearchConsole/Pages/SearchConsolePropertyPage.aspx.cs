@@ -1,5 +1,6 @@
 ﻿using CMS.Base.Web.UI;
 using CMS.Core;
+using CMS.DocumentEngine;
 using CMS.Helpers;
 using CMS.UIControls;
 
@@ -65,7 +66,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
             else
             {
                 InitTreeView();
+                InitSelectedNodeDetails();
+                InitActions();
             }
+        }
+
+
+        private void InitActions()
+        {
+            var sectionNodeIds = InnerTreeView.Nodes.Cast<System.Web.UI.WebControls.TreeNode>().Select(n => ValidationHelper.GetInteger(n.Value, 0));
+            consoleActions.InitializeNodeData(contentTree.SelectedNodeID, sectionNodeIds, CultureCode);
         }
 
 
@@ -77,8 +87,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
             var onClickScript = $"function nodeSelected(nodeId) {{ window.location = '{url}&selectedNode=' + nodeId; }}";
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(onClickScript));
 
-            contentTree.NodeTextTemplate = "<span class=\"ContentTreeItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
-            contentTree.SelectedNodeTextTemplate = "<span id=\"treeSelectedNode\" class=\"ContentTreeSelectedItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
+            contentTree.NodeTextTemplate = "<span style=\"margin-right:10px\" class=\"ContentTreeItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
+            contentTree.SelectedNodeTextTemplate = "<span style=\"margin-right:10px\" id=\"treeSelectedNode\" class=\"ContentTreeSelectedItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
 
             if (InnerTreeView != null)
             {
@@ -100,31 +110,89 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         }
 
 
+        private void InitSelectedNodeDetails()
+        {
+            if (contentTree.SelectedNodeID == 1)
+            {
+                // Root node, hide details
+                pnlNodeDetails.Visible = false;
+                return;
+            }
+
+            var url = DocumentURLProvider.GetAbsoluteUrl(contentTree.SelectedNode);
+            if (String.IsNullOrEmpty(url))
+            {
+                // No live site URL, hide details
+                pnlNodeDetails.Visible = false;
+                return;
+            }
+
+            pnlNodeDetails.Visible = true;
+            ltlUrl.Text = url;
+
+            var indexedStatus = pageIndexStatusInfoProvider.Get()
+                .WhereEquals(nameof(PageIndexStatusInfo.Url), url)
+                .TopN(1)
+                .TypedResult
+                .FirstOrDefault();
+
+            if (indexedStatus == null)
+            {
+                ltlStatus.Text = "Indexing status for this URL has not yet been retrieved from Google.";
+            }
+        }
+
+
         private void SetExpandedSectionIndexedStatus(System.Web.UI.WebControls.TreeNodeCollection nodes)
         {
+            // Update the parent of the section
+            if (nodes.Count > 0 && nodes[0].Parent != null)
+            {
+                SetStatusOfNode(nodes[0].Parent);
+            }
+
             foreach (System.Web.UI.WebControls.TreeNode node in nodes)
             {
-                var nodeId = ValidationHelper.GetInteger(node.Value, 0);
-                var indexedStatus = pageIndexStatusInfoProvider.Get()
-                    .WhereEquals(nameof(PageIndexStatusInfo.NodeID), nodeId)
-                    .WhereEquals(nameof(PageIndexStatusInfo.CultureCode), CultureCode)
-                    .TypedResult
-                    .FirstOrDefault();
-
-                if (indexedStatus == null)
-                {
-                    node.Text += UnknownPageIcon;
-                    continue;
-                }
-                
-                if (String.IsNullOrEmpty(indexedStatus.LatestUpdate))
-                {
-                    node.Text += UnindexedPageIcon;
-                    continue;
-                }
-
-                node.Text += IndexedPageIcon;
+                SetStatusOfNode(node);
             }
+        }
+
+
+        private void SetStatusOfNode(System.Web.UI.WebControls.TreeNode node)
+        {
+            var nodeId = ValidationHelper.GetInteger(node.Value, 0);
+            if (nodeId == 1)
+            {
+                // Root node, skip
+                return;
+            }
+
+            var page = new TreeProvider().SelectSingleNode(nodeId, CultureCode);
+            var url = DocumentURLProvider.GetAbsoluteUrl(page);
+            if (String.IsNullOrEmpty(url))
+            {
+                return;
+            }
+
+            var indexedStatus = pageIndexStatusInfoProvider.Get()
+                .WhereEquals(nameof(PageIndexStatusInfo.Url), url)
+                .TopN(1)
+                .TypedResult
+                .FirstOrDefault();
+
+            if (indexedStatus == null)
+            {
+                node.Text += UnknownPageIcon;
+                return;
+            }
+
+            if (String.IsNullOrEmpty(indexedStatus.LatestUpdate))
+            {
+                node.Text += UnindexedPageIcon;
+                return;
+            }
+
+            node.Text += IndexedPageIcon;
         }
     }
 }

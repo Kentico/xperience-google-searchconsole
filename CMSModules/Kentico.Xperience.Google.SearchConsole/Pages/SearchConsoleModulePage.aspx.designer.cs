@@ -33,33 +33,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         protected global::System.Web.UI.WebControls.Panel pnlMain;
 
         /// <summary>
-        /// btnRequestNode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.RequestUpdateButton btnRequestNode;
-
-        /// <summary>
-        /// btnRequestSection control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.RequestUpdateButton btnRequestSection;
-
-        /// <summary>
-        /// btnRequestTree control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.RequestUpdateButton btnRequestTree;
-
-        /// <summary>
         /// contentTree control.
         /// </summary>
         /// <remarks>
@@ -67,5 +40,41 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::CMSModules_Content_Controls_ContentTree contentTree;
+
+        /// <summary>
+        /// pnlNodeDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlNodeDetails;
+
+        /// <summary>
+        /// ltlUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltlUrl;
+
+        /// <summary>
+        /// ltlStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltlStatus;
+
+        /// <summary>
+        /// consoleActions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleActions consoleActions;
     }
 }

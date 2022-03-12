@@ -5,6 +5,9 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Indexing.v3;
+using Google.Apis.Indexing.v3.Data;
+using Google.Apis.Requests;
+using Google.Apis.Services;
 using Google.Apis.Util.Store;
 
 using Kentico.Xperience.Google.SearchConsole.Services;
@@ -12,18 +15,21 @@ using Kentico.Xperience.Google.SearchConsole.Services;
 using Newtonsoft.Json;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+
+using static Google.Apis.Indexing.v3.UrlNotificationsResource;
 
 [assembly: RegisterImplementation(typeof(ISearchConsoleService), typeof(DefaultSearchConsoleService), Lifestyle = Lifestyle.Singleton, Priority = RegistrationPriority.SystemDefault)]
 namespace Kentico.Xperience.Google.SearchConsole.Services
 {
     public class DefaultSearchConsoleService : ISearchConsoleService
     {
-        private GoogleAuthorizationCodeFlow mFlow;
+        private OfflineAccessGoogleAuthorizationCodeFlow mFlow;
         private ISettingsService settingsService;
 
 
-        public GoogleAuthorizationCodeFlow GoogleAuthorizationCodeFlow
+        public OfflineAccessGoogleAuthorizationCodeFlow GoogleAuthorizationCodeFlow
         {
             get
             {
@@ -40,27 +46,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         public DefaultSearchConsoleService(ISettingsService settingsService)
         {
             this.settingsService = settingsService;
-            /*UserCredential credential;
-            using (var stream = new FileStream(credentialPath, FileMode.Open, FileAccess.Read))
-            {
-            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-            GoogleClientSecrets.FromStream(stream).Secrets,
-            new[] { IndexingService.Scope.Indexing },
-            "user",
-            CancellationToken.None,
-            new FileDataStore(fileStorePhysicalPath, true)
-            ).ConfigureAwait(false).GetAwaiter().GetResult();
-            }*/
-
-            /*var service = new IndexingService(new BaseClientService.Initializer()
-            {
-                ApplicationName = "Dancing Goat",
-                HttpClientInitializer = result.Credential
-            });
-
-            var request = service.UrlNotifications.GetMetadata();
-            request.Url = "https://test.com/test";
-            var response = request.Execute();*/
         }
 
 
@@ -76,7 +61,46 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         }
 
 
-        private GoogleAuthorizationCodeFlow InitializeAuthorizationFlow()
+        public void GetMetadata(IEnumerable<string> urls)
+        {
+            var userCredential = GetUserCredential();
+            if (userCredential == null)
+            {
+                // TODO: Log error
+            }
+
+            var service = new IndexingService(new BaseClientService.Initializer()
+            {
+                ApplicationName = "Dancing Goat",
+                HttpClientInitializer = userCredential
+            });
+
+            var batch = new BatchRequest(service);
+            foreach (var url in urls)
+            {
+                var metadataRequest = new GetMetadataRequest(service) { Url = url };
+                batch.Queue<UrlNotificationMetadata>(metadataRequest, (content, error, i, message) => {
+                    // TODO: Handle response
+                });
+            }
+
+            batch.ExecuteAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+
+        public UserCredential GetUserCredential()
+        {
+            var token = GetAccessToken();
+            if (token == null)
+            {
+                return null;
+            }
+
+            return new UserCredential(GoogleAuthorizationCodeFlow, "user", token);
+        }
+
+
+        private OfflineAccessGoogleAuthorizationCodeFlow InitializeAuthorizationFlow()
         {
             var credentialPath = $"{SearchConsoleConstants.fileStorePhysicalPath}\\{SearchConsoleConstants.CREDENTIALS_FILENAME}";
             if (!File.Exists(credentialPath))
@@ -102,7 +126,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
                 }
             };
 
-            return new GoogleAuthorizationCodeFlow(initializer);
+            return new OfflineAccessGoogleAuthorizationCodeFlow(initializer);
         }
 
     }
