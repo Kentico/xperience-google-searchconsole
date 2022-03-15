@@ -2,6 +2,7 @@
 using CMS.Core;
 using CMS.DocumentEngine;
 using CMS.Helpers;
+using CMS.SiteProvider;
 
 using Google.Apis.SearchConsole.v1.Data;
 
@@ -35,7 +36,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             get
             {
-                return new TreeProvider().SelectSingleNode(SelectedNodeID, "en-US");
+                return new TreeProvider().SelectSingleNode(SelectedNodeID, SelectedCulture);
+            }
+        }
+
+
+        private string SelectedCulture
+        {
+            get
+            {
+                return ValidationHelper.GetString(Session[SearchConsoleConstants.SESSION_SELECTEDCULTURE], CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName));
             }
         }
 
@@ -52,7 +62,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         protected void btnGetSingleStatus_Click(object sender, EventArgs e)
         {
             var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
-            var result = searchConsoleService.GetInspectionResults(new string[] { url }, "en-US");
+            var result = searchConsoleService.GetInspectionResults(new string[] { url }, SelectedCulture);
             if (result.SucessfulRequests == 1)
             {
                 ShowInformation("Request successful, please reoload the page to view the updated information from Google.");
@@ -76,7 +86,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return;
             }
 
-            var result = searchConsoleService.GetInspectionResults(urlsToUpdate, "en-US");
+            var result = searchConsoleService.GetInspectionResults(urlsToUpdate, SelectedCulture);
             if (result.Errors.Count == 0)
             {
                 ShowInformation("Request successful, please reoload the page to view the updated information from Google.");
@@ -256,33 +266,41 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return;
             }
 
-            if (SelectedNodeID == 0 || SelectedNode.IsRoot())
+            if (SelectedNodeID == 0 ||
+                (SelectedNode != null && SelectedNode.IsRoot()))
             {
                 pnlActions.Visible = false;
                 pnlNodeDetails.Visible = false;
+                ltlMessage.Text = "Please select a page from the content tree to view the Google Search Console data.";
+                ltlMessage.Visible = true;
                 return;
             }
 
-            if (String.IsNullOrEmpty(DocumentURLProvider.GetAbsoluteUrl(SelectedNode)))
+            if (SelectedNode == null)
             {
-                // Selected node has no live site URL
+                pnlActions.Visible = false;
                 pnlNodeDetails.Visible = false;
-                btnGetSingleStatus.Visible = false;
+                ltlMessage.Text = "The selected page doesn't exist in the selected culture.";
+                ltlMessage.Visible = true;
                 return;
             }
 
             var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
             if (String.IsNullOrEmpty(url))
             {
-                // No live site URL, hide details
+                pnlActions.Visible = true;
                 pnlNodeDetails.Visible = false;
+                btnGetSingleStatus.Visible = false;
+                ltlMessage.Text = "The selected page doesn't have a URL, but you can still perform operations on the section.";
+                ltlMessage.Visible = true;
                 return;
             }
 
+            pnlActions.Visible = true;
             pnlNodeDetails.Visible = true;
             var inspectionStatus = urlInspectionStatusInfoProvider.Get()
                 .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), "en-US")
+                .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedCulture)
                 .TopN(1)
                 .TypedResult
                 .FirstOrDefault();

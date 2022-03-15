@@ -31,5 +31,14 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::CMSModules_Content_Controls_ContentTree contentTree;
+
+        /// <summary>
+        /// drpCulture control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::CMSFormControls_Cultures_SiteCultureSelector drpCulture;
     }
 }

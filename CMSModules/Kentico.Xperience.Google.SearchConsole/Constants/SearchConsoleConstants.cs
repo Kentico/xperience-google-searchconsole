@@ -4,6 +4,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Constants
 {
     public static class SearchConsoleConstants
     {
+        public const string SESSION_SELECTEDCULTURE = "searchconsole_treeculture";
+
+
         public const string OAUTH_CALLBACK = "Admin/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthCallback.aspx";
 
 

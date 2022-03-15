@@ -3,6 +3,7 @@ using CMS.Core;
 using CMS.DocumentEngine;
 using CMS.Helpers;
 using CMS.Modules;
+using CMS.SiteProvider;
 
 using Google.Apis.SearchConsole.v1.Data;
 
@@ -29,47 +30,29 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
-        private string PassIcon
+        private string SelectedCulture
         {
             get
             {
-                return UIHelper.GetAccessibleIconTag("icon-check-circle", "Valid", additionalClass: "tn color-green-100");
-            }
-        }
+                var dropdownValue = drpCulture.Value.ToString();
 
+                // Try to get from query string
+                var queryStringValue = QueryHelper.GetString("selectedCulture", String.Empty);
+                if (!String.IsNullOrEmpty(queryStringValue))
+                {
+                    if (String.IsNullOrEmpty(dropdownValue) || queryStringValue.Equals(dropdownValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return queryStringValue;
+                    }
+                }
 
-        private string FailIcon
-        {
-            get
-            {
-                return UIHelper.GetAccessibleIconTag("icon-times-circle", "Error", additionalClass: "tn color-red-70");
-            }
-        }
+                // No query string value
+                if (String.IsNullOrEmpty(dropdownValue))
+                {
+                    dropdownValue = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
+                }
 
-
-        private string UnspecifiedIcon
-        {
-            get
-            {
-                return UIHelper.GetAccessibleIconTag("icon-question-circle", "Unknown", additionalClass: "tn color-blue-100");
-            }
-        }
-
-
-        private string PartialIcon
-        {
-            get
-            {
-                return UIHelper.GetAccessibleIconTag("icon-exclamation-triangle", "Valid with warnings", additionalClass: "tn-color-yellow-100");
-            }
-        }
-
-
-        private string NeutralIcon
-        {
-            get
-            {
-                return UIHelper.GetAccessibleIconTag("icon-minus-circle", "Excluded", additionalClass: "tn color-blue-100");
+                return dropdownValue;
             }
         }
 
@@ -86,9 +69,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         private void InitTreeView()
         {
             var elementUrl = ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
-            var onClickScript = $"function nodeSelected(nodeId) {{ window.location = '{elementUrl}?selectedNode='+nodeId; }}";
+            var onClickScript = $"function nodeSelected(nodeId) {{ window.location = '{elementUrl}?selectedNode='+nodeId+'&selectedCulture={SelectedCulture}'; }}";
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(onClickScript));
 
+            contentTree.Culture = SelectedCulture;
             contentTree.NodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" class=\"ContentTreeItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
             contentTree.SelectedNodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" id=\"treeSelectedNode\" class=\"ContentTreeSelectedItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
 
@@ -102,6 +86,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             {
                 contentTree.SelectedNodeID = selectedNode;
             }
+
+            drpCulture.Value = SelectedCulture;
+            Session[SearchConsoleConstants.SESSION_SELECTEDCULTURE] = SelectedCulture;
         }
 
 
@@ -111,7 +98,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             {
                 var nodeId = ValidationHelper.GetInteger(node.Value, 0);
                 var page = new TreeProvider().SelectSingleNode(nodeId, contentTree.Culture);
-                if (page.IsRoot())
+                if (page == null || page.IsRoot())
                 {
                     continue;
                 }
@@ -131,7 +118,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
                 if (inspectionStatus == null)
                 {
-                    node.Text += UnspecifiedIcon;
+                    node.Text += UIHelper.GetAccessibleIconTag("icon-question-circle", "Unknown", additionalClass: "tn color-blue-100");
                     continue;
                 }
 
@@ -139,20 +126,20 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 switch (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict)
                 {
                     case Verdict.PASS:
-                        node.Text += PassIcon;
+                        node.Text += UIHelper.GetAccessibleIconTag("icon-check-circle", "Valid", additionalClass: "tn color-green-100");
                         break;
                     case Verdict.FAIL:
-                        node.Text += FailIcon;
+                        node.Text += UIHelper.GetAccessibleIconTag("icon-times-circle", "Error", additionalClass: "tn color-red-70");
                         break;
                     case Verdict.PARTIAL:
-                        node.Text += PartialIcon;
+                        node.Text += UIHelper.GetAccessibleIconTag("icon-exclamation-triangle", "Valid with warnings", additionalClass: "tn-color-yellow-100");
                         break;
                     case Verdict.NEUTRAL:
-                        node.Text += NeutralIcon;
+                        node.Text += UIHelper.GetAccessibleIconTag("icon-minus-circle", "Excluded", additionalClass: "tn color-blue-100");
                         break;
                     case Verdict.VERDICT_UNSPECIFIED:
                     default:
-                        node.Text += UnspecifiedIcon;
+                        node.Text += UIHelper.GetAccessibleIconTag("icon-question-circle", "Unknown", additionalClass: "tn color-blue-100");
                         break;
                 }
             }

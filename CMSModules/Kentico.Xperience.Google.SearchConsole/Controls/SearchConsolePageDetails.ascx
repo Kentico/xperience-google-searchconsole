@@ -25,62 +25,63 @@
 
 <div style="padding:30px">
     <uc:OAuthButton ID="btnAuth" runat="server" Visible="false" />
+    <asp:Literal ID="ltlMessage" runat="server" EnableViewState="false" Visible="false" />
     <asp:Panel ID="pnlActions" runat="server">
-        <asp:Button ID="btnGetSingleStatus" runat="server" CssClass="btn btn-default" Text="Get selected page status" OnClick="btnGetSingleStatus_Click" />
-        <asp:Button ID="btnGetSectionStatus" runat="server" CssClass="btn btn-default" Text="Get section status" OnClick="btnGetSectionStatus_Click" />
+        <div style="padding-top:10px;padding-bottom:50px">
+            <asp:Button ID="btnGetSingleStatus" runat="server" CssClass="btn btn-default" Text="Get selected page status" OnClick="btnGetSingleStatus_Click" />
+            <asp:Button ID="btnGetSectionStatus" runat="server" CssClass="btn btn-default" Text="Get section status" OnClick="btnGetSectionStatus_Click" />
+        </div>
     </asp:Panel>
     <asp:Panel ID="pnlNodeDetails" runat="server">
-        <div style="padding-top:50px">
-            <p style="font-size:4.2em">
-                <%# GetSelectedNodeName() %>
-            </p>
-            <p style="padding-top:20px">
-                <%# GetSelectedNodeUrl() %>
-            </p>
-            <div class="CoverageTable">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td class="header"><b>Coverage</b></td>
-                            <td class="header"><%# GetCoverageMessage() %></td>
-                        </tr>
-                        <tr>
-                            <td class="section">Discovery</td>
-                        </tr>
-                        <tr>
-                            <td>Sitemaps</td>
-                            <td><%# GetSitemapMessage() %></td>
-                        </tr>
-                        <tr>
-                            <td>Referring URLs</td>
-                            <td><%# GetReferrersMessage() %></td>
-                        </tr>
-                        <tr>
-                            <td class="section">Crawl</td>
-                        </tr>
-                        <tr>
-                            <td>Last crawl</td>
-                            <td><%# GetLastCrawlTime() %></td>
-                        </tr>
-                        <tr>
-                            <td>Crawled as</td>
-                            <td><%# GetCrawledAsMessage() %></td>
-                        </tr>
-                        <tr>
-                            <td>Crawl allowed</td>
-                            <td><%# GetCrawlAllowedMessage() %></td>
-                        </tr>
-                        <tr>
-                            <td>Page fetch</td>
-                            <td><%# GetPageFetchAllowedMessage() %></td>
-                        </tr>
-                        <tr>
-                            <td>Indexing allowed</td>
-                            <td><%# GetIndexingAllowedMessage() %></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <p style="font-size:4.2em">
+            <%# GetSelectedNodeName() %>
+        </p>
+        <p style="padding-top:20px">
+            <%# GetSelectedNodeUrl() %>
+        </p>
+        <div class="CoverageTable">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="header"><b>Coverage</b></td>
+                        <td class="header"><%# GetCoverageMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td class="section">Discovery</td>
+                    </tr>
+                    <tr>
+                        <td>Sitemaps</td>
+                        <td><%# GetSitemapMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>Referring URLs</td>
+                        <td><%# GetReferrersMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td class="section">Crawl</td>
+                    </tr>
+                    <tr>
+                        <td>Last crawl</td>
+                        <td><%# GetLastCrawlTime() %></td>
+                    </tr>
+                    <tr>
+                        <td>Crawled as</td>
+                        <td><%# GetCrawledAsMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>Crawl allowed</td>
+                        <td><%# GetCrawlAllowedMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>Page fetch</td>
+                        <td><%# GetPageFetchAllowedMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>Indexing allowed</td>
+                        <td><%# GetIndexingAllowedMessage() %></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </asp:Panel>
 </div>
