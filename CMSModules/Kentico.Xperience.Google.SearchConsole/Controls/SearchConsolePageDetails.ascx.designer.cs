@@ -7,21 +7,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kentico.Xperience.Google.SearchConsole.Pages
+namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
 
 
-    public partial class SearchConsolePropertyPage
+    public partial class SearchConsolePageDetails
     {
-
-        /// <summary>
-        /// hidSelectedNode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hidSelectedNode;
 
         /// <summary>
         /// btnAuth control.
@@ -33,22 +24,31 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         protected global::Kentico.Xperience.Google.SearchConsole.Controls.OAuthButton btnAuth;
 
         /// <summary>
-        /// pnlMain control.
+        /// pnlActions control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlMain;
+        protected global::System.Web.UI.WebControls.Panel pnlActions;
 
         /// <summary>
-        /// contentTree control.
+        /// btnGetSingleStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMSModules_Content_Controls_ContentTree contentTree;
+        protected global::System.Web.UI.WebControls.Button btnGetSingleStatus;
+
+        /// <summary>
+        /// btnGetSectionStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGetSectionStatus;
 
         /// <summary>
         /// pnlNodeDetails control.
@@ -58,32 +58,5 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNodeDetails;
-
-        /// <summary>
-        /// ltlUrl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal ltlUrl;
-
-        /// <summary>
-        /// ltlStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal ltlStatus;
-
-        /// <summary>
-        /// consoleActions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleActions consoleActions;
     }
 }

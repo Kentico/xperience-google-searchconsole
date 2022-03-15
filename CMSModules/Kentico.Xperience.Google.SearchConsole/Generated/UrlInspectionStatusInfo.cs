@@ -1,41 +1,36 @@
 using System;
 using System.Data;
 using System.Runtime.Serialization;
-using System.Collections.Generic;
 
 using CMS;
 using CMS.DataEngine;
 using CMS.Helpers;
 using Kentico.Xperience.Google.SearchConsole;
 
-[assembly: RegisterObjectType(typeof(PageIndexStatusInfo), PageIndexStatusInfo.OBJECT_TYPE)]
+[assembly: RegisterObjectType(typeof(UrlInspectionStatusInfo), UrlInspectionStatusInfo.OBJECT_TYPE)]
 
 namespace Kentico.Xperience.Google.SearchConsole
 {
     /// <summary>
-    /// Data container class for <see cref="PageIndexStatusInfo"/>.
+    /// Data container class for <see cref="UrlInspectionStatusInfo"/>.
     /// </summary>
     [Serializable]
-    public partial class PageIndexStatusInfo : AbstractInfo<PageIndexStatusInfo, IPageIndexStatusInfoProvider>
+    public partial class UrlInspectionStatusInfo : AbstractInfo<UrlInspectionStatusInfo, IUrlInspectionStatusInfoProvider>
     {
         /// <summary>
         /// Object type.
         /// </summary>
-        public const string OBJECT_TYPE = "googlesearchconsole.pageindexstatus";
+        public const string OBJECT_TYPE = "googlesearchconsole.urlinspectionstatus";
 
 
         /// <summary>
         /// Type information.
         /// </summary>
 #warning "You will need to configure the type info."
-        public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(PageIndexStatusInfoProvider), OBJECT_TYPE, "GoogleSearchConsole.PageIndexStatus", "PageIndexStatusID", null, null, null, null, null, null, null, null)
+        public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(UrlInspectionStatusInfoProvider), OBJECT_TYPE, "GoogleSearchConsole.UrlInspectionStatus", "PageIndexStatusID", null, null, null, null, null, null, null, null)
         {
             ModuleName = "Kentico.Xperience.Google.SearchConsole",
             TouchCacheDependencies = true,
-            DependsOn = new List<ObjectDependency>()
-            {
-                new ObjectDependency("NodeID", "cms.node", ObjectDependencyEnum.Required),
-            },
         };
 
 
@@ -57,35 +52,35 @@ namespace Kentico.Xperience.Google.SearchConsole
 
 
         /// <summary>
-        /// Node ID.
+        /// Culture.
         /// </summary>
         [DatabaseField]
-        public virtual int NodeID
+        public virtual string Culture
         {
             get
             {
-                return ValidationHelper.GetInteger(GetValue("NodeID"), 0);
+                return ValidationHelper.GetString(GetValue("Culture"), String.Empty);
             }
             set
             {
-                SetValue("NodeID", value, 0);
+                SetValue("Culture", value);
             }
         }
 
 
         /// <summary>
-        /// Culture code.
+        /// Inspection result requested on.
         /// </summary>
         [DatabaseField]
-        public virtual string CultureCode
+        public virtual DateTime InspectionResultRequestedOn
         {
             get
             {
-                return ValidationHelper.GetString(GetValue("CultureCode"), String.Empty);
+                return ValidationHelper.GetDateTime(GetValue("InspectionResultRequestedOn"), DateTimeHelper.ZERO_TIME);
             }
             set
             {
-                SetValue("CultureCode", value, String.Empty);
+                SetValue("InspectionResultRequestedOn", value, DateTimeHelper.ZERO_TIME);
             }
         }
 
@@ -102,41 +97,24 @@ namespace Kentico.Xperience.Google.SearchConsole
             }
             set
             {
-                SetValue("Url", value, String.Empty);
+                SetValue("Url", value);
             }
         }
 
 
         /// <summary>
-        /// Latest update.
+        /// Last inspection result.
         /// </summary>
         [DatabaseField]
-        public virtual string LatestUpdate
+        public virtual string LastInspectionResult
         {
             get
             {
-                return ValidationHelper.GetString(GetValue("LatestUpdate"), String.Empty);
+                return ValidationHelper.GetString(GetValue("LastInspectionResult"), String.Empty);
             }
             set
             {
-                SetValue("LatestUpdate", value, String.Empty);
-            }
-        }
-
-
-        /// <summary>
-        /// Latest remove.
-        /// </summary>
-        [DatabaseField]
-        public virtual string LatestRemove
-        {
-            get
-            {
-                return ValidationHelper.GetString(GetValue("LatestRemove"), String.Empty);
-            }
-            set
-            {
-                SetValue("LatestRemove", value, String.Empty);
+                SetValue("LastInspectionResult", value, String.Empty);
             }
         }
 
@@ -164,26 +142,26 @@ namespace Kentico.Xperience.Google.SearchConsole
         /// </summary>
         /// <param name="info">Serialization info.</param>
         /// <param name="context">Streaming context.</param>
-        protected PageIndexStatusInfo(SerializationInfo info, StreamingContext context)
+        protected UrlInspectionStatusInfo(SerializationInfo info, StreamingContext context)
             : base(info, context, TYPEINFO)
         {
         }
 
 
         /// <summary>
-        /// Creates an empty instance of the <see cref="PageIndexStatusInfo"/> class.
+        /// Creates an empty instance of the <see cref="UrlInspectionStatusInfo"/> class.
         /// </summary>
-        public PageIndexStatusInfo()
+        public UrlInspectionStatusInfo()
             : base(TYPEINFO)
         {
         }
 
 
         /// <summary>
-        /// Creates a new instances of the <see cref="PageIndexStatusInfo"/> class from the given <see cref="DataRow"/>.
+        /// Creates a new instances of the <see cref="UrlInspectionStatusInfo"/> class from the given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="dr">DataRow with the object data.</param>
-        public PageIndexStatusInfo(DataRow dr)
+        public UrlInspectionStatusInfo(DataRow dr)
             : base(TYPEINFO, dr)
         {
         }

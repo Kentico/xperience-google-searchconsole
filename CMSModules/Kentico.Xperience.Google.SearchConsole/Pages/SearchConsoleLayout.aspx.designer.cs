@@ -7,38 +7,38 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kentico.Xperience.Google.SearchConsole.Controls
+namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
 
 
-    public partial class SearchConsoleActions
+    public partial class SearchConsoleLayout
     {
 
         /// <summary>
-        /// drpMode control.
+        /// layoutElem control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.Base.Web.UI.CMSDropDownList drpMode;
+        protected global::CMS.UIControls.UILayout layoutElem;
 
         /// <summary>
-        /// drpAction control.
+        /// uipTree control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.Base.Web.UI.CMSDropDownList drpAction;
+        protected global::CMS.UIControls.UILayoutPane uipTree;
 
         /// <summary>
-        /// btnSubmit control.
+        /// UILayoutPane1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSubmit;
+        protected global::CMS.UIControls.UILayoutPane UILayoutPane1;
     }
 }

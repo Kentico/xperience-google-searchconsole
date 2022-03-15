@@ -1,10 +1,10 @@
 ﻿using CMS.Base;
 
-namespace Kentico.Xperience.Google.SearchConsole
+namespace Kentico.Xperience.Google.SearchConsole.Constants
 {
     public static class SearchConsoleConstants
     {
-        public const string OAUTH_CALLBACK = "google/oauth/callback";
+        public const string OAUTH_CALLBACK = "Admin/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthCallback.aspx";
 
 
         public const string TOKEN_CALLBACK = "CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthAuthorizationFinished.aspx";

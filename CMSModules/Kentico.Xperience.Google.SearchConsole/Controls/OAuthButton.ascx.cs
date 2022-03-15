@@ -4,6 +4,7 @@ using CMS.Helpers;
 
 using Google.Apis.Auth.OAuth2.Web;
 
+using Kentico.Xperience.Google.SearchConsole.Constants;
 using Kentico.Xperience.Google.SearchConsole.Services;
 
 using System;
@@ -21,7 +22,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             base.OnLoad(e);
 
             searchConsoleService = Service.Resolve<ISearchConsoleService>();
-            if (searchConsoleService.GetAccessToken() == null)
+            if (searchConsoleService.GetUserCredential() == null)
             {
                 InitButton();
             }

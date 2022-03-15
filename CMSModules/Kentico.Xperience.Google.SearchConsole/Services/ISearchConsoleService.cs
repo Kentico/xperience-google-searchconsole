@@ -1,6 +1,6 @@
 ﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
-using Google.Apis.Auth.OAuth2.Responses;
+
+using Kentico.Xperience.Google.SearchConsole.Models;
 
 using System.Collections.Generic;
 
@@ -14,10 +14,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         }
 
 
-        TokenResponse GetAccessToken();
-
-
-        void GetMetadata(IEnumerable<string> urls);
+        RequestResults GetInspectionResults(IEnumerable<string> urls, string cultureCode);
 
 
         UserCredential GetUserCredential();
