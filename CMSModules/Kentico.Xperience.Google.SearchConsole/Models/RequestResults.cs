@@ -17,7 +17,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         /// <summary>
         /// The total number of requests that were successful.
         /// </summary>
-        public int SucessfulRequests
+        public int SuccessfulRequests
         {
             get;
             set;

@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Models;
 
@@ -18,5 +19,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
 
 
         UserCredential GetUserCredential();
+
+
+        WmxSite GetSite(string xperienceDomain);
     }
 }

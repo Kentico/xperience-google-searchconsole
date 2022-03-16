@@ -1,6 +1,7 @@
 ﻿using CMS;
 using CMS.Core;
 using CMS.Helpers;
+using CMS.SiteProvider;
 
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -29,8 +30,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
     public class DefaultSearchConsoleService : ISearchConsoleService
     {
         private OfflineAccessGoogleAuthorizationCodeFlow mFlow;
-        private ISettingsService settingsService;
         private IEventLogService eventLogService;
+        private IAppSettingsService appSettingsService;
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
 
 
@@ -49,41 +50,55 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
 
 
         public DefaultSearchConsoleService(
-            ISettingsService settingsService,
             IEventLogService eventLogService,
+            IAppSettingsService appSettingsService,
             IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider)
         {
-            this.settingsService = settingsService;
             this.eventLogService = eventLogService;
+            this.appSettingsService = appSettingsService;
             this.urlInspectionStatusInfoProvider = urlInspectionStatusInfoProvider;
         }
 
 
         public RequestResults GetInspectionResults(IEnumerable<string> urls, string cultureCode)
         {
+            var requestResults = new RequestResults();
             var userCredential = GetUserCredential();
             if (userCredential == null)
             {
-                // TODO: Log error
+                var error = $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.";
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetInspectionResults), error);
+                requestResults.FailedRequests = urls.Count();
+                requestResults.Errors.Add(error);
+
+                return requestResults;
             }
 
             var service = new SearchConsoleService(new BaseClientService.Initializer()
             {
-                ApplicationName = "Dancing Goat",
+                ApplicationName = appSettingsService[SearchConsoleConstants.APPSETTING_APPLICATIONNAME],
                 HttpClientInitializer = userCredential
             });
 
-            // TODO: Configure SiteUrl properly as indicated by https://developers.google.com/webmaster-tools/v1/urlInspection.index/inspect#request-body
-            var domainWithProtocol = $"{RequestContext.CurrentScheme}://{RequestContext.CurrentDomain}/";
+            // Get search console formatted site URL
+            var searchConsoleSite = GetSite(SiteContext.CurrentSite.SitePresentationURL);
+            if (searchConsoleSite == null)
+            {
+                var error = $"Unable to retrieve the Google Search Console site. Please check the Event Log for details.";
+                requestResults.FailedRequests = urls.Count();
+                requestResults.Errors.Add(error);
+
+                return requestResults;
+            }
+
             var batch = new BatchRequest(service);
-            var requestResults = new RequestResults();
             foreach (var url in urls)
             {
                 var request = new InspectUrlIndexRequest()
                 {
                     InspectionUrl = url,
                     LanguageCode = cultureCode,
-                    SiteUrl = domainWithProtocol
+                    SiteUrl = searchConsoleSite.SiteUrl
                 };
 
                 batch.Queue<InspectUrlIndexResponse>(service.UrlInspection.Index.Inspect(request), (content, error, i, message) => {
@@ -92,32 +107,32 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
                         requestResults.FailedRequests++;
                         requestResults.Errors.Add(error.Message);
                         eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetInspectionResults), error.Message);
+
+                        return;
                     }
-                    else
+
+                    var existingInfo = urlInspectionStatusInfoProvider.Get()
+                        .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
+                        .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), cultureCode)
+                        .TopN(1)
+                        .TypedResult
+                        .FirstOrDefault();
+
+                    var urlInspectionStatusInfo = new UrlInspectionStatusInfo
                     {
-                        var existingInfo = urlInspectionStatusInfoProvider.Get()
-                            .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                            .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), "en-US")
-                            .TopN(1)
-                            .TypedResult
-                            .FirstOrDefault();
+                        Url = url,
+                        Culture = cultureCode,
+                        InspectionResultRequestedOn = DateTime.Now,
+                        LastInspectionResult = JsonConvert.SerializeObject(content)
+                    };
 
-                        var urlInspectionStatusInfo = new UrlInspectionStatusInfo
-                        {
-                            Url = url,
-                            Culture = cultureCode,
-                            InspectionResultRequestedOn = DateTime.Now,
-                            LastInspectionResult = JsonConvert.SerializeObject(content)
-                        };
-
-                        if (existingInfo != null)
-                        {
-                            urlInspectionStatusInfo.PageIndexStatusID = existingInfo.PageIndexStatusID;
-                        }
-
-                        urlInspectionStatusInfoProvider.Set(urlInspectionStatusInfo);
-                        requestResults.SucessfulRequests++;
+                    if (existingInfo != null)
+                    {
+                        urlInspectionStatusInfo.PageIndexStatusID = existingInfo.PageIndexStatusID;
                     }
+
+                    urlInspectionStatusInfoProvider.Set(urlInspectionStatusInfo);
+                    requestResults.SuccessfulRequests++;
                 });
             }
 
@@ -128,7 +143,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
 
         public UserCredential GetUserCredential()
         {
-            var token = GoogleAuthorizationCodeFlow.LoadTokenAsync("user", CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+            var token = GoogleAuthorizationCodeFlow.LoadTokenAsync(SearchConsoleConstants.DEFAULT_USER, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             if (token == null)
             {
                 return null;
@@ -137,10 +152,37 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             var expiresOn = token.IssuedUtc.AddSeconds(ValidationHelper.GetDouble(token.ExpiresInSeconds, 0));
             if (DateTime.UtcNow >= expiresOn)
             {
-                GoogleAuthorizationCodeFlow.RefreshTokenAsync("user", token.RefreshToken, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+                GoogleAuthorizationCodeFlow.RefreshTokenAsync(SearchConsoleConstants.DEFAULT_USER, token.RefreshToken, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             }
 
-            return new UserCredential(GoogleAuthorizationCodeFlow, "user", token);
+            return new UserCredential(GoogleAuthorizationCodeFlow, SearchConsoleConstants.DEFAULT_USER, token);
+        }
+
+
+        public WmxSite GetSite(string xperienceDomain)
+        {
+            var userCredential = GetUserCredential();
+            if (userCredential == null)
+            {
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetSite),
+                    $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.");
+                return null;
+            }
+
+            var service = new SearchConsoleService(new BaseClientService.Initializer()
+            {
+                ApplicationName = appSettingsService[SearchConsoleConstants.APPSETTING_APPLICATIONNAME],
+                HttpClientInitializer = userCredential
+            });
+
+            var response = service.Sites.List().Execute();
+            var matchingSite = response.SiteEntry.FirstOrDefault(site => site.SiteUrl.Contains(xperienceDomain));
+            if (matchingSite == null)
+            {
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetSite), $"Couldn't find the site '{xperienceDomain}' within Google Search Console.");
+            }
+
+            return matchingSite;
         }
 
 

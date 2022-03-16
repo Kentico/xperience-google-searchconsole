@@ -63,7 +63,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
             var result = searchConsoleService.GetInspectionResults(new string[] { url }, SelectedCulture);
-            if (result.SucessfulRequests == 1)
+            if (result.SuccessfulRequests == 1)
             {
                 ShowInformation("Request successful, please reoload the page to view the updated information from Google.");
             }
@@ -87,15 +87,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
 
             var result = searchConsoleService.GetInspectionResults(urlsToUpdate, SelectedCulture);
-            if (result.Errors.Count == 0)
+            if (result.SuccessfulRequests == urlsToUpdate.Count())
             {
-                ShowInformation("Request successful, please reoload the page to view the updated information from Google.");
+                ShowInformation("Request successful, please reload the page to view the updated information from Google.");
             }
             else
             {
                 ShowError($"{result.FailedRequests}/{urlsToUpdate.Count()} requests failed. Please check the Event Log for more information.");
             }
         }
+
 
         protected string GetSelectedNodeName()
         {

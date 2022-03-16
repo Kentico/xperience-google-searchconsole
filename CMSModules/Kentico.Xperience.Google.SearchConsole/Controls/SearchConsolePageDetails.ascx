@@ -2,6 +2,10 @@
 <%@ Register TagPrefix="uc" TagName="OAuthButton" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/OAuthButton.ascx" %>
 
 <style>
+    .ActionPanel{
+        padding-top: 10px;
+        padding-bottom: 50px;
+    }
     .CoverageTable {
         padding: 30px;
         margin-top: 30px;
@@ -14,10 +18,10 @@
     .CoverageTable table tr td {
         padding-top: 7px;
     }
-    .CoverageTable .header {
+    .CoverageTable .Header {
         border-bottom: 1px solid #ccc;
     }
-    .CoverageTable .section {
+    .CoverageTable .Section {
         padding-top: 30px;
         font-weight: bold;
     }
@@ -27,7 +31,7 @@
     <uc:OAuthButton ID="btnAuth" runat="server" Visible="false" />
     <asp:Literal ID="ltlMessage" runat="server" EnableViewState="false" Visible="false" />
     <asp:Panel ID="pnlActions" runat="server">
-        <div style="padding-top:10px;padding-bottom:50px">
+        <div class="ActionPanel">
             <asp:Button ID="btnGetSingleStatus" runat="server" CssClass="btn btn-default" Text="Get selected page status" OnClick="btnGetSingleStatus_Click" />
             <asp:Button ID="btnGetSectionStatus" runat="server" CssClass="btn btn-default" Text="Get section status" OnClick="btnGetSectionStatus_Click" />
         </div>
@@ -43,11 +47,11 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="header"><b>Coverage</b></td>
-                        <td class="header"><%# GetCoverageMessage() %></td>
+                        <td class="Header"><b>Coverage</b></td>
+                        <td class="Header"><%# GetCoverageMessage() %></td>
                     </tr>
                     <tr>
-                        <td class="section">Discovery</td>
+                        <td class="Section">Discovery</td>
                     </tr>
                     <tr>
                         <td>Sitemaps</td>
@@ -58,7 +62,7 @@
                         <td><%# GetReferrersMessage() %></td>
                     </tr>
                     <tr>
-                        <td class="section">Crawl</td>
+                        <td class="Section">Crawl</td>
                     </tr>
                     <tr>
                         <td>Last crawl</td>
@@ -85,4 +89,3 @@
         </div>
     </asp:Panel>
 </div>
-

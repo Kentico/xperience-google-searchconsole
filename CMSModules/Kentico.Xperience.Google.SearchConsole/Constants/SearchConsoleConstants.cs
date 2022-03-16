@@ -4,6 +4,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Constants
 {
     public static class SearchConsoleConstants
     {
+        public const string DEFAULT_USER = "searchconsoleuser";
+
+
+        public const string APPSETTING_APPLICATIONNAME = "CMSApplicationName";
+
+
         public const string SESSION_SELECTEDCULTURE = "searchconsole_treeculture";
 
 

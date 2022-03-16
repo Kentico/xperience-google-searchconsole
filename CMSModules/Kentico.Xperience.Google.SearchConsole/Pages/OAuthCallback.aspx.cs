@@ -22,7 +22,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
             try
             {
                 searchConsoleService.GoogleAuthorizationCodeFlow.ExchangeCodeForTokenAsync(
-                    "user",
+                    SearchConsoleConstants.DEFAULT_USER,
                     code,
                     $"{domainWithProtocol}/{SearchConsoleConstants.OAUTH_CALLBACK}",
                     CancellationToken.None

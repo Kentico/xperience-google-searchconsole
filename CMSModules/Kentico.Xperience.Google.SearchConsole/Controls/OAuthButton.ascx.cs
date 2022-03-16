@@ -8,6 +8,7 @@ using Kentico.Xperience.Google.SearchConsole.Constants;
 using Kentico.Xperience.Google.SearchConsole.Services;
 
 using System;
+using System.Threading;
 using System.Web.UI;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
@@ -37,7 +38,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             var domainWithProtocol = $"{RequestContext.CurrentScheme}://{RequestContext.CurrentDomain}";
             var auth = new AuthorizationCodeWebApp(searchConsoleService.GoogleAuthorizationCodeFlow, $"{domainWithProtocol}/{SearchConsoleConstants.OAUTH_CALLBACK}", Guid.NewGuid().ToString());
-            var result = auth.AuthorizeAsync("user", new System.Threading.CancellationToken()).ConfigureAwait(false).GetAwaiter().GetResult();
+            var result = auth.AuthorizeAsync(SearchConsoleConstants.DEFAULT_USER, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
             var script = $"function AuthorizeGoogle() {{ window.open('{result.RedirectUri}', '', 'width=400,height=600,left=700,top=200'); }}";
             ScriptHelper.RegisterClientScriptBlock(this, GetType(), "AuthorizeGoogle", script, true);
