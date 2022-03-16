@@ -55,6 +55,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
             searchConsoleService = Service.Resolve<ISearchConsoleService>();
+
+            ScriptHelper.RegisterDialogScript(Page);
+
             Initialize();
             DataBind();
         }
@@ -179,7 +182,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls != null &&
                 inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls.Count > 0)
             {
-                return String.Join("<br/>", inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls);
+                var url = UrlResolver.ResolveUrl($"~/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/ReferringUrlsDialog.aspx?inspectionStatusID={inspectionStatus.PageIndexStatusID}");
+                var script = $"function OpenReferringUrls() {{ modalDialog('{url}', 'OpenReferringUrls', '900', '600', null); return false; }}";
+                ScriptHelper.RegisterClientScriptBlock(this, GetType(), "OpenReferringUrls", script, true);
+
+                return $"<a href='#' onclick='OpenReferringUrls()'>{inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls.Count}</a>";
             }
 
             return "None detected";
