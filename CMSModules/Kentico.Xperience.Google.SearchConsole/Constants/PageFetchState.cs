@@ -17,5 +17,29 @@
         public const string BLOCKED_4XX = "BLOCKED_4XX";
         public const string INTERNAL_CRAWL_ERROR = "INTERNAL_CRAWL_ERROR";
         public const string INVALID_URL = "INVALID_URL";
+
+
+        public static string GetIcon(string pageFetchState)
+        {
+            switch (pageFetchState)
+            {
+                case SUCCESSFUL:
+                    return IconSet.Checked("Successful");
+                case SOFT_404:
+                case BLOCKED_ROBOTS_TXT:
+                case NOT_FOUND:
+                case ACCESS_DENIED:
+                case SERVER_ERROR:
+                case REDIRECT_ERROR:
+                case ACCESS_FORBIDDEN:
+                case BLOCKED_4XX:
+                case INTERNAL_CRAWL_ERROR:
+                case INVALID_URL:
+                    return IconSet.Error("Error");
+                case PAGE_FETCH_STATE_UNSPECIFIED:
+                default:
+                    return IconSet.Question("Unknown");
+            }
+        }
     }
 }

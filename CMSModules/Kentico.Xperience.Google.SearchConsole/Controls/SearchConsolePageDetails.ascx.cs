@@ -21,6 +21,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
         private ISearchConsoleService searchConsoleService;
         private InspectUrlIndexResponse inspectUrlIndexResponse;
+        private UrlInspectionStatusInfo inspectionStatus;
 
 
         private int SelectedNodeID
@@ -98,6 +99,31 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        protected string GetUrlMatchMessage()
+        {
+            if (inspectUrlIndexResponse == null)
+            {
+                return "N/A";
+            }
+
+            var userUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical;
+            var googleUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.GoogleCanonical;
+            if (userUrl == googleUrl)
+            {
+                return $"{IconSet.Checked("Match")} Match";
+            }
+
+            var tooltip = $"User canonical: {userUrl}, Google canonical: {googleUrl}";
+            return $"{IconSet.Error(tooltip)} Mismatch";
+        }
+
+
+        protected string GetLastRefreshTime()
+        {
+            return inspectionStatus == null ? "N/A" : inspectionStatus.InspectionResultRequestedOn.ToString();
+        }
+
+
         protected string GetSelectedNodeName()
         {
             return SelectedNode == null ? String.Empty : SelectedNode.DocumentName;
@@ -106,13 +132,31 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
         protected string GetSelectedNodeUrl()
         {
-            return SelectedNode == null ? String.Empty : DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
+            if (SelectedNode == null)
+            {
+                return String.Empty;
+            }
+
+            var searchConsoleLink = String.Empty;
+            if (inspectUrlIndexResponse != null)
+            {
+                searchConsoleLink = $"<a style='padding-left:15px' href='{inspectUrlIndexResponse.InspectionResult.InspectionResultLink}' target='_blank'>View in Google Search Console</a>"; 
+            }
+
+            var nodeUrl = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
+            return $"<i>{nodeUrl}</i> {searchConsoleLink}";
         }
 
 
         protected string GetCoverageMessage()
         {
-            return inspectUrlIndexResponse == null ? "Inspection status for this URL has not yet been retrieved from Google." : inspectUrlIndexResponse.InspectionResult.IndexStatusResult.CoverageState;
+            if (inspectUrlIndexResponse == null)
+            {
+                return $"{Verdict.GetIcon(Verdict.VERDICT_UNSPECIFIED)} Inspection status for this URL has not yet been retrieved from Google.";
+            }
+
+            var icon = Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict);
+            return $"{icon} {inspectUrlIndexResponse.InspectionResult.IndexStatusResult.CoverageState}";
         }
 
 
@@ -175,19 +219,20 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
-        protected string GetCrawlAllowedMessage()
+        protected string GetRobotsTxtMessage()
         {
             if (inspectUrlIndexResponse != null &&
                 !String.IsNullOrEmpty(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.RobotsTxtState))
             {
+                var icon = RobotsTxtState.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.RobotsTxtState);
                 switch (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.RobotsTxtState)
                 {
                     case RobotsTxtState.ROBOTS_TXT_STATE_UNSPECIFIED:
-                        return "The page wasn't fetched or found, or the robots.txt couldn't be reached";
+                        return $"{icon} The page wasn't fetched or found, or the robots.txt couldn't be reached";
                     case RobotsTxtState.DISALLOWED:
-                        return "Disallowed";
+                        return $"{icon} Disallowed";
                     case RobotsTxtState.ALLOWED:
-                        return "Allowed";
+                        return $"{icon} Allowed";
                 }
             }
 
@@ -200,33 +245,34 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             if (inspectUrlIndexResponse != null &&
                 !String.IsNullOrEmpty(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.PageFetchState))
             {
+                var icon = PageFetchState.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.PageFetchState);
                 switch (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.PageFetchState)
                 {
                     case PageFetchState.SUCCESSFUL:
-                        return "Successful";
+                        return $"{icon} Successful";
                     case PageFetchState.ACCESS_FORBIDDEN:
-                        return "Access forbidden";
+                        return $"{icon} Access forbidden";
                     case PageFetchState.ACCESS_DENIED:
-                        return "Access denied";
+                        return $"{icon} Access denied";
                     case PageFetchState.SOFT_404:
-                        return "Soft 404";
+                        return $"{icon} Soft 404";
                     case PageFetchState.BLOCKED_ROBOTS_TXT:
-                        return "Blocked by robots.txt";
+                        return $"{icon} Blocked by robots.txt";
                     case PageFetchState.NOT_FOUND:
-                        return "Page not found";
+                        return $"{icon} Page not found";
                     case PageFetchState.SERVER_ERROR:
-                        return "Server error";
+                        return $"{icon} Server error";
                     case PageFetchState.REDIRECT_ERROR:
-                        return "Redirection error";
+                        return $"{icon} Redirection error";
                     case PageFetchState.BLOCKED_4XX:
-                        return "Blocked by 4XX error (not 403 or 404)";
+                        return $"{icon} Blocked by 4XX error (not 403 or 404)";
                     case PageFetchState.INTERNAL_CRAWL_ERROR:
-                        return "Crawler error";
+                        return $"{icon} Crawler error";
                     case PageFetchState.INVALID_URL:
-                        return "Invalid URL";
+                        return $"{icon} Invalid URL";
                     case PageFetchState.PAGE_FETCH_STATE_UNSPECIFIED:
                     default:
-                        return "Unknown";
+                        return $"{icon} Unknown";
                 }
             }
 
@@ -239,17 +285,18 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             if (inspectUrlIndexResponse != null &&
                 !String.IsNullOrEmpty(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.IndexingState))
             {
+                var icon = IndexingState.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.IndexingState);
                 switch (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.IndexingState)
                 {
                     case IndexingState.BLOCKED_BY_META_TAG:
-                        return "Indexing not allowed, 'noindex' detected in 'robots' meta tag";
+                        return $"{icon} Indexing not allowed, 'noindex' detected in 'robots' meta tag";
                     case IndexingState.BLOCKED_BY_HTTP_HEADER:
-                        return "Indexing not allowed, 'noindex' detected in 'X-Robots-Tag' http header";
+                        return $"{icon} Indexing not allowed, 'noindex' detected in 'X-Robots-Tag' http header";
                     case IndexingState.INDEXING_ALLOWED:
-                        return "Indexing allowed";
+                        return $"{icon} Indexing allowed";
                     case IndexingState.INDEXING_STATE_UNSPECIFIED:
                     default:
-                        return "Unknown";
+                        return $"{icon} Unknown";
                 }
             }
 
@@ -299,7 +346,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
             pnlActions.Visible = true;
             pnlNodeDetails.Visible = true;
-            var inspectionStatus = urlInspectionStatusInfoProvider.Get()
+            inspectionStatus = urlInspectionStatusInfoProvider.Get()
                 .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
                 .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedCulture)
                 .TopN(1)

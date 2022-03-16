@@ -10,5 +10,24 @@
         public const string PARTIAL = "PARTIAL";
         public const string FAIL = "FAIL";
         public const string NEUTRAL = "NEUTRAL";
+
+
+        public static string GetIcon(string verdict)
+        {
+            switch (verdict)
+            {
+                case PASS:
+                    return IconSet.Checked("Valid");
+                case FAIL:
+                    return IconSet.Error("Error");
+                case PARTIAL:
+                    return IconSet.Warning("Valid with warnings");
+                case NEUTRAL:
+                    return IconSet.Minus("Unknown");
+                case VERDICT_UNSPECIFIED:
+                default:
+                    return IconSet.Question("Not fetched");
+            }
+        }
     }
 }

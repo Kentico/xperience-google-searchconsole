@@ -8,5 +8,20 @@
         public const string ROBOTS_TXT_STATE_UNSPECIFIED = "ROBOTS_TXT_STATE_UNSPECIFIED";
         public const string ALLOWED = "ALLOWED";
         public const string DISALLOWED = "DISALLOWED";
+
+
+        public static string GetIcon(string robotsTxtState)
+        {
+            switch (robotsTxtState)
+            {
+                case ALLOWED:
+                    return IconSet.Checked("Allowed");
+                case DISALLOWED:
+                    return IconSet.Error("Disallowed");
+                case ROBOTS_TXT_STATE_UNSPECIFIED:
+                default:
+                    return IconSet.Question("Unknown");
+            }
+        }
     }
 }

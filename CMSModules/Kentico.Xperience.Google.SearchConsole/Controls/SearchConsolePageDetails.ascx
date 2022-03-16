@@ -32,15 +32,15 @@
     <asp:Literal ID="ltlMessage" runat="server" EnableViewState="false" Visible="false" />
     <asp:Panel ID="pnlActions" runat="server">
         <div class="ActionPanel">
-            <asp:Button ID="btnGetSingleStatus" runat="server" CssClass="btn btn-default" Text="Get selected page status" OnClick="btnGetSingleStatus_Click" />
-            <asp:Button ID="btnGetSectionStatus" runat="server" CssClass="btn btn-default" Text="Get section status" OnClick="btnGetSectionStatus_Click" />
+            <asp:Button ID="btnGetSingleStatus" runat="server" CssClass="btn btn-default" Text="Refresh page status" OnClick="btnGetSingleStatus_Click" />
+            <asp:Button ID="btnGetSectionStatus" runat="server" CssClass="btn btn-default" Text="Refresh section status" OnClick="btnGetSectionStatus_Click" />
         </div>
     </asp:Panel>
     <asp:Panel ID="pnlNodeDetails" runat="server">
         <p style="font-size:4.2em">
             <%# GetSelectedNodeName() %>
         </p>
-        <p style="padding-top:20px">
+        <p style="padding-top:15px">
             <%# GetSelectedNodeUrl() %>
         </p>
         <div class="CoverageTable">
@@ -51,7 +51,11 @@
                         <td class="Header"><%# GetCoverageMessage() %></td>
                     </tr>
                     <tr>
-                        <td class="Section">Discovery</td>
+                        <td>Refreshed on</td>
+                        <td><%# GetLastRefreshTime() %></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="Section">Discovery</td>
                     </tr>
                     <tr>
                         <td>Sitemaps</td>
@@ -62,7 +66,7 @@
                         <td><%# GetReferrersMessage() %></td>
                     </tr>
                     <tr>
-                        <td class="Section">Crawl</td>
+                        <td colspan="2" class="Section">Crawl</td>
                     </tr>
                     <tr>
                         <td>Last crawl</td>
@@ -74,7 +78,7 @@
                     </tr>
                     <tr>
                         <td>Crawl allowed</td>
-                        <td><%# GetCrawlAllowedMessage() %></td>
+                        <td><%# GetRobotsTxtMessage() %></td>
                     </tr>
                     <tr>
                         <td>Page fetch</td>
@@ -83,6 +87,13 @@
                     <tr>
                         <td>Indexing allowed</td>
                         <td><%# GetIndexingAllowedMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="Section">Indexing</td>
+                    </tr>
+                    <tr>
+                        <td>Canonical URL</td>
+                        <td><%# GetUrlMatchMessage() %></td>
                     </tr>
                 </tbody>
             </table>

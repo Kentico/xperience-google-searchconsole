@@ -10,5 +10,22 @@
         public const string BLOCKED_BY_META_TAG = "BLOCKED_BY_META_TAG";
         public const string BLOCKED_BY_HTTP_HEADER = "BLOCKED_BY_HTTP_HEADER";
         public const string BLOCKED_BY_ROBOTS_TXT = "BLOCKED_BY_ROBOTS_TXT";
+
+
+        public static string GetIcon(string indexingState)
+        {
+            switch (indexingState)
+            {
+                case INDEXING_ALLOWED:
+                    return IconSet.Checked("Allowed");
+                case BLOCKED_BY_META_TAG:
+                case BLOCKED_BY_HTTP_HEADER:
+                case BLOCKED_BY_ROBOTS_TXT:
+                    return IconSet.Error("Blocked");
+                case INDEXING_STATE_UNSPECIFIED:
+                default:
+                    return IconSet.Question("Unknown");
+            }
+        }
     }
 }

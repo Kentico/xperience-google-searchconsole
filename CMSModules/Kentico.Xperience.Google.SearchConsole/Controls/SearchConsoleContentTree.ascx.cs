@@ -34,25 +34,25 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             get
             {
-                var dropdownValue = drpCulture.Value.ToString();
+                var defaultCulture = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
+                if (IsPostBack)
+                {
+                    var dropdownValue = drpCulture.Value.ToString();
+                    if (String.IsNullOrEmpty(dropdownValue))
+                    {
+                        dropdownValue = defaultCulture;
+                    }
 
-                // Try to get from query string
+                    return dropdownValue;
+                }
+                
                 var queryStringValue = QueryHelper.GetString("selectedCulture", String.Empty);
                 if (!String.IsNullOrEmpty(queryStringValue))
                 {
-                    if (String.IsNullOrEmpty(dropdownValue) || queryStringValue.Equals(dropdownValue, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return queryStringValue;
-                    }
+                    return queryStringValue;
                 }
 
-                // No query string value
-                if (String.IsNullOrEmpty(dropdownValue))
-                {
-                    dropdownValue = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
-                }
-
-                return dropdownValue;
+                return defaultCulture;
             }
         }
 
@@ -62,7 +62,14 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             base.OnLoad(e);
 
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
+
             InitTreeView();
+
+            Session[SearchConsoleConstants.SESSION_SELECTEDCULTURE] = SelectedCulture;
+            if (!IsPostBack)
+            {
+                drpCulture.Value = SelectedCulture;
+            }
         }
 
 
@@ -86,9 +93,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             {
                 contentTree.SelectedNodeID = selectedNode;
             }
-
-            drpCulture.Value = SelectedCulture;
-            Session[SearchConsoleConstants.SESSION_SELECTEDCULTURE] = SelectedCulture;
         }
 
 
@@ -118,30 +122,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
                 if (inspectionStatus == null)
                 {
-                    node.Text += UIHelper.GetAccessibleIconTag("icon-question-circle", "Unknown", additionalClass: "tn color-blue-100");
+                    node.Text += IconSet.Question("Unknown");
                     continue;
                 }
 
                 var inspectUrlIndexResponse = JsonConvert.DeserializeObject<InspectUrlIndexResponse>(inspectionStatus.LastInspectionResult);
-                switch (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict)
-                {
-                    case Verdict.PASS:
-                        node.Text += UIHelper.GetAccessibleIconTag("icon-check-circle", "Valid", additionalClass: "tn color-green-100");
-                        break;
-                    case Verdict.FAIL:
-                        node.Text += UIHelper.GetAccessibleIconTag("icon-times-circle", "Error", additionalClass: "tn color-red-70");
-                        break;
-                    case Verdict.PARTIAL:
-                        node.Text += UIHelper.GetAccessibleIconTag("icon-exclamation-triangle", "Valid with warnings", additionalClass: "tn-color-yellow-100");
-                        break;
-                    case Verdict.NEUTRAL:
-                        node.Text += UIHelper.GetAccessibleIconTag("icon-minus-circle", "Excluded", additionalClass: "tn color-blue-100");
-                        break;
-                    case Verdict.VERDICT_UNSPECIFIED:
-                    default:
-                        node.Text += UIHelper.GetAccessibleIconTag("icon-question-circle", "Unknown", additionalClass: "tn color-blue-100");
-                        break;
-                }
+                node.Text += Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict);
             }
         }
     }
