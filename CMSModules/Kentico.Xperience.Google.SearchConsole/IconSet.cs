@@ -18,7 +18,7 @@ namespace Kentico.Xperience.Google.SearchConsole
         
         public static string Warning(string tooltip)
         {
-            return UIHelper.GetAccessibleIconTag("icon-exclamation-triangle", tooltip, additionalClass: "tn-color-yellow-100");
+            return UIHelper.GetAccessibleIconTag("icon-exclamation-triangle", tooltip, additionalClass: "tn color-orange-80");
         }
 
 

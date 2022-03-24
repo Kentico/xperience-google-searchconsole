@@ -5,6 +5,7 @@ using CMS.SiteProvider;
 
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Indexing.v3;
 using Google.Apis.SearchConsole.v1;
 using Google.Apis.SearchConsole.v1.Data;
@@ -57,6 +58,29 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             this.eventLogService = eventLogService;
             this.appSettingsService = appSettingsService;
             this.urlInspectionStatusInfoProvider = urlInspectionStatusInfoProvider;
+        }
+
+        
+        public string GetUrlForCallback()
+        {
+            var site = SiteInfo.Provider.Get()
+                .WhereLike("SiteDomainName", $"{RequestContext.CurrentDomain}%")
+                .FirstOrDefault();
+            if (site != null)
+            {
+                return $"{RequestContext.CurrentScheme}://{site.DomainName}/{SearchConsoleConstants.OAUTH_CALLBACK}";
+            }
+
+            var siteAlias = SiteDomainAliasInfo.Provider.Get()
+                .WhereEquals(nameof(SiteDomainAliasInfo.SiteDomainAliasType), SiteDomainAliasTypeEnum.Administration)
+                .WhereLike(nameof(SiteDomainAliasInfo.SiteDomainAliasName), $"{RequestContext.CurrentDomain}%")
+                .FirstOrDefault();
+            if (siteAlias != null)
+            {
+                return $"{RequestContext.CurrentScheme}://{siteAlias.SiteDomainAliasName}/{SearchConsoleConstants.OAUTH_CALLBACK}";
+            }
+
+            return $"{RequestContext.CurrentScheme}://{SiteContext.CurrentSite.DomainName}/{SearchConsoleConstants.OAUTH_CALLBACK}";
         }
 
 
@@ -143,6 +167,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
 
         public UserCredential GetUserCredential()
         {
+            if (GoogleAuthorizationCodeFlow == null)
+            {
+                return null;
+            }
+
             var token = GoogleAuthorizationCodeFlow.LoadTokenAsync(SearchConsoleConstants.DEFAULT_USER, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             if (token == null)
             {
@@ -152,7 +181,15 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             var expiresOn = token.IssuedUtc.AddSeconds(ValidationHelper.GetDouble(token.ExpiresInSeconds, 0));
             if (DateTime.UtcNow >= expiresOn)
             {
-                GoogleAuthorizationCodeFlow.RefreshTokenAsync(SearchConsoleConstants.DEFAULT_USER, token.RefreshToken, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+                try
+                {
+                    GoogleAuthorizationCodeFlow.RefreshTokenAsync(SearchConsoleConstants.DEFAULT_USER, token.RefreshToken, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+                catch (TokenResponseException ex)
+                {
+                    eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetUserCredential), ex.Message);
+                    return null;
+                }
             }
 
             return new UserCredential(GoogleAuthorizationCodeFlow, SearchConsoleConstants.DEFAULT_USER, token);
@@ -191,7 +228,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             var credentialPath = $"{SearchConsoleConstants.fileStorePhysicalPath}\\{SearchConsoleConstants.CREDENTIALS_FILENAME}";
             if (!File.Exists(credentialPath))
             {
-                throw new InvalidOperationException($"Google OAuth credential file '{SearchConsoleConstants.CREDENTIALS_FILENAME}' not found in the {SearchConsoleConstants.fileStorePhysicalPath} directory.");
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(InitializeAuthorizationFlow), $"Google OAuth credential file '{SearchConsoleConstants.CREDENTIALS_FILENAME}' not found in the {SearchConsoleConstants.fileStorePhysicalPath} directory.");
+                return null;
             }
 
             GoogleAuthorizationCodeFlow.Initializer initializer;

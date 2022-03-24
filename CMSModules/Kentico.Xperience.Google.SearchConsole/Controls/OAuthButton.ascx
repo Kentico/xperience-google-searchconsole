@@ -7,7 +7,7 @@
                 <asp:Literal Text="Google access token not found. Please click here to re-authorize." runat="server" />
             </div>
             <div class="editing-form-value-cell">
-                <cms:LocalizedButton ID="btnAuth" runat="server" EnableViewState="false" ResourceString="sf.authorize" ButtonStyle="Default" />
+                <asp:Button ID="btnAuth" runat="server" EnableViewState="false" CssClass="btn btn-default" Text="Authorize" />
             </div>
         </div>
     </div>

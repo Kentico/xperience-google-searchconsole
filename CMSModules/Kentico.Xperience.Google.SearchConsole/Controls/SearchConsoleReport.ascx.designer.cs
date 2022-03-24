@@ -11,7 +11,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
 
 
-    public partial class SearchConsolePageDetails
+    public partial class SearchConsoleReport
     {
 
         /// <summary>
@@ -24,21 +24,39 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         protected global::Kentico.Xperience.Google.SearchConsole.Controls.OAuthButton btnAuth;
 
         /// <summary>
-        /// pnlActions control.
+        /// ltlMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.ActionPanel pnlActions;
+        protected global::System.Web.UI.WebControls.Literal ltlMessage;
 
         /// <summary>
-        /// pnlNodeDetails control.
+        /// pnlReport control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlNodeDetails;
+        protected global::System.Web.UI.WebControls.Panel pnlReport;
+
+        /// <summary>
+        /// ltlHeader control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltlHeader;
+
+        /// <summary>
+        /// gridReport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::CMSAdminControls_UI_UniGrid_UniGrid gridReport;
     }
 }

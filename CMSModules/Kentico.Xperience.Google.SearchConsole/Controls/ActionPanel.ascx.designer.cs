@@ -11,34 +11,34 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
 
 
-    public partial class SearchConsolePageDetails
+    public partial class ActionPanel
     {
 
         /// <summary>
-        /// btnAuth control.
+        /// ltlMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.OAuthButton btnAuth;
+        protected global::System.Web.UI.WebControls.Literal ltlMessage;
 
         /// <summary>
-        /// pnlActions control.
+        /// btnGetSingleStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.ActionPanel pnlActions;
+        protected global::System.Web.UI.WebControls.Button btnGetSingleStatus;
 
         /// <summary>
-        /// pnlNodeDetails control.
+        /// btnGetSectionStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlNodeDetails;
+        protected global::System.Web.UI.WebControls.Button btnGetSectionStatus;
     }
 }

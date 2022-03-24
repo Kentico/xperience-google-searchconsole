@@ -29,5 +29,24 @@
                     return IconSet.Question("Not fetched");
             }
         }
+
+
+        public static string GetMessage(string verdict)
+        {
+            switch (verdict)
+            {
+                case PASS:
+                    return "Valid";
+                case FAIL:
+                    return "Error";
+                case PARTIAL:
+                    return "Valid with warnings";
+                case NEUTRAL:
+                    return "Unknown";
+                case VERDICT_UNSPECIFIED:
+                default:
+                    return "Unknown";
+            }
+        }
     }
 }

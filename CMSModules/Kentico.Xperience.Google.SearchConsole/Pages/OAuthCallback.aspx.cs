@@ -1,5 +1,6 @@
 ﻿using CMS.Core;
 using CMS.Helpers;
+using CMS.UIControls;
 
 using Kentico.Xperience.Google.SearchConsole.Constants;
 using Kentico.Xperience.Google.SearchConsole.Services;
@@ -9,22 +10,20 @@ using System.Threading;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
-    public partial class OAuthCallback : System.Web.UI.Page
+    public partial class OAuthCallback : CMSPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
             var success = false;
             var message = String.Empty;
             var searchConsoleService = Service.Resolve<ISearchConsoleService>();
-
             var code = QueryHelper.GetString("code", String.Empty);
-            var domainWithProtocol = $"{RequestContext.CurrentScheme}://{RequestContext.CurrentDomain}";
             try
             {
                 searchConsoleService.GoogleAuthorizationCodeFlow.ExchangeCodeForTokenAsync(
                     SearchConsoleConstants.DEFAULT_USER,
                     code,
-                    $"{domainWithProtocol}/{SearchConsoleConstants.OAUTH_CALLBACK}",
+                    searchConsoleService.GetUrlForCallback(),
                     CancellationToken.None
                 ).ConfigureAwait(false).GetAwaiter().GetResult();
 

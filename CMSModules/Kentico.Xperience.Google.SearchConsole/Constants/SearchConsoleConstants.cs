@@ -10,10 +10,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Constants
         public const string APPSETTING_APPLICATIONNAME = "CMSApplicationName";
 
 
-        public const string SESSION_SELECTEDCULTURE = "searchconsole_treeculture";
-
-
-        public const string OAUTH_CALLBACK = "Admin/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthCallback.aspx";
+        public const string OAUTH_CALLBACK = "CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthCallback.aspx";
 
 
         public const string TOKEN_CALLBACK = "CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthAuthorizationFinished.aspx";

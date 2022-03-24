@@ -27,5 +27,22 @@
                     return IconSet.Question("Unknown");
             }
         }
+
+
+        public static string GetMessage(string indexingState)
+        {
+            switch (indexingState)
+            {
+                case BLOCKED_BY_META_TAG:
+                    return "Indexing not allowed, 'noindex' detected in 'robots' meta tag";
+                case BLOCKED_BY_HTTP_HEADER:
+                    return "Indexing not allowed, 'noindex' detected in 'X-Robots-Tag' http header";
+                case INDEXING_ALLOWED:
+                    return "Indexing allowed";
+                case INDEXING_STATE_UNSPECIFIED:
+                default:
+                    return "Unknown";
+            }
+        }
     }
 }

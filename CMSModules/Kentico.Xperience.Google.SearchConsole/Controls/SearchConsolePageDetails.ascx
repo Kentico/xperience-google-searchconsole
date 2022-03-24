@@ -1,49 +1,40 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="SearchConsolePageDetails.ascx.cs" Inherits="Kentico.Xperience.Google.SearchConsole.Controls.SearchConsolePageDetails" %>
+<%@ Register TagPrefix="uc" TagName="ActionPanel" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/ActionPanel.ascx" %>
 <%@ Register TagPrefix="uc" TagName="OAuthButton" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/OAuthButton.ascx" %>
 
 <style>
-    .ActionPanel{
-        padding-top: 10px;
-        padding-bottom: 50px;
-    }
-    .CoverageTable {
+    .DetailTable {
         padding: 30px;
         margin-top: 30px;
         background-color: #f3f3f3;
         border-radius: 10px;
     }
-    .CoverageTable table tr td:first-child {
+    .DetailTable table tr td:first-child {
         width: 160px;
     }
-    .CoverageTable table tr td {
+    .DetailTable table tr td {
         padding-top: 7px;
     }
-    .CoverageTable .Header {
+    .DetailTable .Header {
         border-bottom: 1px solid #ccc;
     }
-    .CoverageTable .Section {
+    .DetailTable .Section {
         padding-top: 30px;
         font-weight: bold;
     }
 </style>
 
-<div style="padding:30px">
-    <uc:OAuthButton ID="btnAuth" runat="server" Visible="false" />
-    <asp:Literal ID="ltlMessage" runat="server" EnableViewState="false" Visible="false" />
-    <asp:Panel ID="pnlActions" runat="server">
-        <div class="ActionPanel">
-            <asp:Button ID="btnGetSingleStatus" runat="server" CssClass="btn btn-default" Text="Refresh page status" OnClick="btnGetSingleStatus_Click" />
-            <asp:Button ID="btnGetSectionStatus" runat="server" CssClass="btn btn-default" Text="Refresh section status" OnClick="btnGetSectionStatus_Click" />
-        </div>
-    </asp:Panel>
-    <asp:Panel ID="pnlNodeDetails" runat="server">
-        <p style="font-size:4.2em">
+<div style="padding:30px;margin-bottom:100px">
+    <uc:OAuthButton ID="btnAuth" runat="server" Visible="false" EnableViewState="false" />
+    <uc:ActionPanel ID="pnlActions" runat="server" EnableViewState="false" />
+    <asp:Panel ID="pnlNodeDetails" runat="server" Visible="false" EnableViewState="false">
+        <p style="font-size:4.2em;margin-top:40px">
             <%# GetSelectedNodeName() %>
         </p>
         <p style="padding-top:15px">
             <%# GetSelectedNodeUrl() %>
         </p>
-        <div class="CoverageTable">
+        <div class="DetailTable">
             <table>
                 <tbody>
                     <tr>
@@ -81,19 +72,71 @@
                         <td><%# GetRobotsTxtMessage() %></td>
                     </tr>
                     <tr>
-                        <td>Page fetch</td>
-                        <td><%# GetPageFetchAllowedMessage() %></td>
+                        <td colspan="2" class="Section">Indexing</td>
                     </tr>
                     <tr>
                         <td>Indexing allowed</td>
                         <td><%# GetIndexingAllowedMessage() %></td>
                     </tr>
                     <tr>
-                        <td colspan="2" class="Section">Indexing</td>
+                        <td>Page fetch</td>
+                        <td><%# GetPageFetchAllowedMessage() %></td>
                     </tr>
                     <tr>
                         <td>Canonical URL</td>
                         <td><%# GetUrlMatchMessage() %></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="DetailTable">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="Header"><b>Mobile usability</b></td>
+                        <td class="Header"><%# GetMobileUsabilityMessage() %></td>
+                    </tr>
+                    <%# GetMobileUsabilityIssues() %>
+                </tbody>
+            </table>
+        </div>
+        <div class="DetailTable">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="Header"><b>Rich results</b></td>
+                        <td class="Header"><%# GetRichResultsMessage() %></td>
+                    </tr>
+                    <%# GetRichResultsIssues() %>
+                </tbody>
+            </table>
+        </div>
+        <div class="DetailTable">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="Header"><b>AMP status</b></td>
+                        <td class="Header"><%# GetAmpMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>Indexing</td>
+                        <td><%# GetAmpIndexingState() %></td>
+                    </tr>
+                    <tr>
+                        <td>Crawl allowed</td>
+                        <td><%# GetAmpRobotsTxtMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>Last crawl</td>
+                        <td><%# GetAmpLastCrawlTime() %></td>
+                    </tr>
+                    <tr>
+                        <td>Page fetch</td>
+                        <td><%# GetAmpPageFetchAllowedMessage() %></td>
+                    </tr>
+                    <tr>
+                        <td>AMP URL</td>
+                        <td><%# GetAmpUrl() %></td>
                     </tr>
                 </tbody>
             </table>

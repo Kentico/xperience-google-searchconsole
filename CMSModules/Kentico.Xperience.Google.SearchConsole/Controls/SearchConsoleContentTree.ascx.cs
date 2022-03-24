@@ -3,11 +3,11 @@ using CMS.Core;
 using CMS.DocumentEngine;
 using CMS.Helpers;
 using CMS.Modules;
-using CMS.SiteProvider;
 
 using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Constants;
+using Kentico.Xperience.Google.SearchConsole.Pages;
 
 using Newtonsoft.Json;
 
@@ -30,29 +30,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
-        private string SelectedCulture
+        private SearchConsoleLayout SearchConsoleLayout
         {
             get
             {
-                var defaultCulture = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
-                if (IsPostBack)
-                {
-                    var dropdownValue = drpCulture.Value.ToString();
-                    if (String.IsNullOrEmpty(dropdownValue))
-                    {
-                        dropdownValue = defaultCulture;
-                    }
-
-                    return dropdownValue;
-                }
-                
-                var queryStringValue = QueryHelper.GetString("selectedCulture", String.Empty);
-                if (!String.IsNullOrEmpty(queryStringValue))
-                {
-                    return queryStringValue;
-                }
-
-                return defaultCulture;
+                return Page as SearchConsoleLayout;
             }
         }
 
@@ -61,25 +43,38 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             base.OnLoad(e);
 
+            var elementUrl = ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
+            var nodeClickScript = $@"
+function nodeSelected(nodeId) {{
+    window.location = '{elementUrl}?{nameof(SearchConsoleLayout.SelectedCulture)}={SearchConsoleLayout.SelectedCulture}'
+    +'&{nameof(SearchConsoleLayout.SelectedMode)}={SearchConsoleLayout.SelectedMode}'
+    +'&{nameof(SearchConsoleLayout.SelectedNodeID)}='+nodeId;
+}}";
+            var modeButtonClickScript = $@"
+function modeSelected(mode) {{
+    window.location = '{elementUrl}?{nameof(SearchConsoleLayout.SelectedNodeID)}={SearchConsoleLayout.SelectedNodeID}'
+    +'&{nameof(SearchConsoleLayout.SelectedCulture)}={SearchConsoleLayout.SelectedCulture}'
+    +'&{nameof(SearchConsoleLayout.SelectedMode)}='+mode;
+}}";
+            var cultureChangeScript = $@"
+function cultureSelected(control) {{
+    var culture = control.value;
+    window.location = '{elementUrl}?{nameof(SearchConsoleLayout.SelectedNodeID)}={SearchConsoleLayout.SelectedNodeID}'
+    +'&{nameof(SearchConsoleLayout.SelectedMode)}={SearchConsoleLayout.SelectedMode}'
+    +'&{nameof(SearchConsoleLayout.SelectedCulture)}='+culture;
+}}";
+            ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(nodeClickScript));
+            ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "modeSelected", ScriptHelper.GetScript(modeButtonClickScript));
+            ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "cultureSelected", ScriptHelper.GetScript(cultureChangeScript));
+
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
-
             InitTreeView();
-
-            Session[SearchConsoleConstants.SESSION_SELECTEDCULTURE] = SelectedCulture;
-            if (!IsPostBack)
-            {
-                drpCulture.Value = SelectedCulture;
-            }
         }
 
 
         private void InitTreeView()
         {
-            var elementUrl = ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
-            var onClickScript = $"function nodeSelected(nodeId) {{ window.location = '{elementUrl}?selectedNode='+nodeId+'&selectedCulture={SelectedCulture}'; }}";
-            ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(onClickScript));
-
-            contentTree.Culture = SelectedCulture;
+            contentTree.Culture = SearchConsoleLayout.SelectedCulture;
             contentTree.NodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" class=\"ContentTreeItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
             contentTree.SelectedNodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" id=\"treeSelectedNode\" class=\"ContentTreeSelectedItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
 
@@ -88,11 +83,24 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 InnerTreeView.TreeNodePopulate += (sender, eventArgs) => SetExpandedSectionIndexedStatus(eventArgs.Node.ChildNodes);
             }
 
-            var selectedNode = QueryHelper.GetInteger("selectedNode", 0);
-            if (selectedNode > 0)
+            if (SearchConsoleLayout.SelectedNodeID > 0)
             {
-                contentTree.SelectedNodeID = selectedNode;
+                contentTree.SelectedNodeID = SearchConsoleLayout.SelectedNodeID;
             }
+
+            if (SearchConsoleLayout.SelectedMode == (int)SearchConsoleLayout.LayoutMode.Overview)
+            {
+                btnModeOverview.RemoveCssClass("btn-default");
+                btnModeOverview.AddCssClass("btn-primary");
+            }
+            else if (SearchConsoleLayout.SelectedMode == (int)SearchConsoleLayout.LayoutMode.Report)
+            {
+                btnModeReport.RemoveCssClass("btn-default");
+                btnModeReport.AddCssClass("btn-primary");
+            }
+
+            drpCulture.Value = SearchConsoleLayout.SelectedCulture;
+            drpCulture.UniSelector.OnAfterClientChanged = $"cultureSelected(this);";
         }
 
 
@@ -101,7 +109,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             foreach (System.Web.UI.WebControls.TreeNode node in nodes)
             {
                 var nodeId = ValidationHelper.GetInteger(node.Value, 0);
-                var page = new TreeProvider().SelectSingleNode(nodeId, contentTree.Culture);
+                var page = new TreeProvider().SelectSingleNode(nodeId, SearchConsoleLayout.SelectedCulture);
                 if (page == null || page.IsRoot())
                 {
                     continue;
@@ -115,7 +123,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
                 var inspectionStatus = urlInspectionStatusInfoProvider.Get()
                     .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), contentTree.Culture)
+                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SearchConsoleLayout.SelectedCulture)
                     .TopN(1)
                     .TypedResult
                     .FirstOrDefault();

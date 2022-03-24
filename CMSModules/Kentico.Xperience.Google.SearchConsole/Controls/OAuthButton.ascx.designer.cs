@@ -30,6 +30,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.Base.Web.UI.LocalizedButton btnAuth;
+        protected global::System.Web.UI.WebControls.Button btnAuth;
     }
 }

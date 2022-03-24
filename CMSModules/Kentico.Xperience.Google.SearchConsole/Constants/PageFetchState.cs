@@ -41,5 +41,38 @@
                     return IconSet.Question("Unknown");
             }
         }
+
+
+        public static string GetMessage(string pageFetchState)
+        {
+            switch (pageFetchState)
+            {
+                case SUCCESSFUL:
+                    return "Successful";
+                case ACCESS_FORBIDDEN:
+                    return "Access forbidden";
+                case ACCESS_DENIED:
+                    return "Access denied";
+                case SOFT_404:
+                    return "Soft 404";
+                case BLOCKED_ROBOTS_TXT:
+                    return "Blocked by robots.txt";
+                case NOT_FOUND:
+                    return "Page not found";
+                case SERVER_ERROR:
+                    return "Server error";
+                case REDIRECT_ERROR:
+                    return "Redirection error";
+                case BLOCKED_4XX:
+                    return "Blocked by 4XX error (not 403 or 404)";
+                case INTERNAL_CRAWL_ERROR:
+                    return "Crawler error";
+                case INVALID_URL:
+                    return "Invalid URL";
+                case PAGE_FETCH_STATE_UNSPECIFIED:
+                default:
+                    return "Unknown";
+            }
+        }
     }
 }

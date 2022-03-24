@@ -33,12 +33,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         protected global::CMS.UIControls.UILayoutPane uipTree;
 
         /// <summary>
-        /// UILayoutPane1 control.
+        /// uipDetails control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.UIControls.UILayoutPane UILayoutPane1;
+        protected global::CMS.UIControls.UILayoutPane uipDetails;
     }
 }
