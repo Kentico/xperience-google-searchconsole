@@ -25,6 +25,8 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 
+using Google.Apis.Indexing.v3.Data;
+
 [assembly: RegisterImplementation(typeof(ISearchConsoleService), typeof(DefaultSearchConsoleService), Lifestyle = Lifestyle.Singleton, Priority = RegistrationPriority.SystemDefault)]
 namespace Kentico.Xperience.Google.SearchConsole.Services
 {
@@ -142,20 +144,18 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
                         .TypedResult
                         .FirstOrDefault();
 
-                    var urlInspectionStatusInfo = new UrlInspectionStatusInfo
+                    if (existingInfo == null)
                     {
-                        Url = url,
-                        Culture = cultureCode,
-                        InspectionResultRequestedOn = DateTime.Now,
-                        LastInspectionResult = JsonConvert.SerializeObject(content)
-                    };
-
-                    if (existingInfo != null)
-                    {
-                        urlInspectionStatusInfo.PageIndexStatusID = existingInfo.PageIndexStatusID;
+                        existingInfo = new UrlInspectionStatusInfo
+                        {
+                            Url = url,
+                            Culture = cultureCode
+                        };
                     }
 
-                    urlInspectionStatusInfoProvider.Set(urlInspectionStatusInfo);
+                    existingInfo.InspectionResultRequestedOn = DateTime.Now;
+                    existingInfo.LastInspectionResult = JsonConvert.SerializeObject(content);
+                    urlInspectionStatusInfoProvider.Set(existingInfo);
                     requestResults.SuccessfulRequests++;
                 });
             }
@@ -254,5 +254,53 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             return new OfflineAccessGoogleAuthorizationCodeFlow(initializer);
         }
 
+
+        public PublishUrlNotificationResponse RequestIndexingForPage(string url, string cultureCode)
+        {
+            var userCredential = GetUserCredential();
+            if (userCredential == null)
+            {
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexingForPage),
+                    $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.");
+                return null;
+            }
+
+            var service = new IndexingService(new BaseClientService.Initializer()
+            {
+                ApplicationName = appSettingsService[SearchConsoleConstants.APPSETTING_APPLICATIONNAME],
+                HttpClientInitializer = userCredential
+            });
+
+            var request = service.UrlNotifications.Publish(new UrlNotification
+            {
+                Url = url,
+                Type = "URL_UPDATED"
+            });
+
+            var response = request.Execute();
+            if (response.UrlNotificationMetadata != null)
+            {
+                var existingInfo = urlInspectionStatusInfoProvider.Get()
+                        .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
+                        .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), cultureCode)
+                        .TopN(1)
+                        .TypedResult
+                        .FirstOrDefault();
+
+                if (existingInfo == null)
+                {
+                    existingInfo = new UrlInspectionStatusInfo
+                    {
+                        Url = url,
+                        Culture = cultureCode
+                    };
+                }
+
+                existingInfo.IndexingRequestedOn = DateTime.Now;
+                urlInspectionStatusInfoProvider.Set(existingInfo);
+            }
+
+            return response;
+        }
     }
 }

@@ -34,16 +34,16 @@
         <p style="padding-top:15px">
             <%# GetSelectedNodeUrl() %>
         </p>
+        <p style="padding-top:15px">
+            <b>Status refreshed on:</b> <%# GetLastRefreshTime() %><br />
+            <b>Indexing requested on:</b> <%# GetIndexingRequestTime() %>
+        </p>
         <div class="DetailTable">
             <table>
                 <tbody>
                     <tr>
                         <td class="Header"><b>Coverage</b></td>
                         <td class="Header"><%# GetCoverageMessage() %></td>
-                    </tr>
-                    <tr>
-                        <td>Refreshed on</td>
-                        <td><%# GetLastRefreshTime() %></td>
                     </tr>
                     <tr>
                         <td colspan="2" class="Section">Discovery</td>

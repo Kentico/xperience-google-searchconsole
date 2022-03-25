@@ -32,11 +32,53 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = "N/A";
 
 
-        public string Coverage
+        public string CoverageVerdict
         {
             get;
             set;
         } = Verdict.VERDICT_UNSPECIFIED;
+
+
+        public string MobileVerdict
+        {
+            get;
+            set;
+        } = Verdict.VERDICT_UNSPECIFIED;
+
+
+        public string RichResultsVerdict
+        {
+            get;
+            set;
+        } = Verdict.VERDICT_UNSPECIFIED;
+
+
+        public string AmpVerdict
+        {
+            get;
+            set;
+        } = Verdict.VERDICT_UNSPECIFIED;
+
+
+        public string IndexState
+        {
+            get;
+            set;
+        } = IndexingState.INDEXING_STATE_UNSPECIFIED;
+
+
+        public string FetchState
+        {
+            get;
+            set;
+        } = PageFetchState.PAGE_FETCH_STATE_UNSPECIFIED;
+
+
+        public string CrawlState
+        {
+            get;
+            set;
+        } = RobotsTxtState.ROBOTS_TXT_STATE_UNSPECIFIED;
 
 
         public int ReferringUrlCount
@@ -81,17 +123,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = "N/A";
 
 
-        public string IndexingAllowed
+        public ReportCanonicalUrls CanonicalUrls
         {
             get;
             set;
-        } = "N/A";
-
-
-        public string CanonicalMatch
-        {
-            get;
-            set;
-        } = "N/A";
+        }
     }
 }

@@ -128,7 +128,7 @@ function cultureSelected(control) {{
                     .TypedResult
                     .FirstOrDefault();
 
-                if (inspectionStatus == null)
+                if (inspectionStatus == null || String.IsNullOrEmpty(inspectionStatus.LastInspectionResult))
                 {
                     node.Text += IconSet.Question("Unknown");
                     continue;

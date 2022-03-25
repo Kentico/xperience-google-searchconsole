@@ -32,6 +32,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 ltlMessage.Visible = true;
                 btnGetSingleStatus.Visible = false;
                 btnGetSectionStatus.Visible = false;
+                btnIndexSingle.Visible = false;
                 return;
             }
 
@@ -41,6 +42,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 ltlMessage.Visible = true;
                 btnGetSingleStatus.Visible = false;
                 btnGetSectionStatus.Visible = false;
+                btnIndexSingle.Visible = false;
                 return;
             }
 
@@ -48,6 +50,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             if (String.IsNullOrEmpty(url))
             {
                 btnGetSingleStatus.Visible = false;
+                btnIndexSingle.Visible = false;
                 return;
             }
         }
@@ -89,6 +92,20 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             {
                 ShowError($"{result.FailedRequests}/{urlsToUpdate.Count()} refreshes failed. Please check the Event Log for more information.");
             }
+        }
+
+
+        protected void btnIndexSingle_Click(object sender, EventArgs e)
+        {
+            var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
+            var result = searchConsoleService.RequestIndexingForPage(url, SelectedNode.DocumentCulture);
+            if (result == null)
+            {
+                ShowError("Indexing request failed. Please check the Event Log for more information.");
+                return;
+            }
+
+            ShowInformation("Indexing request submitted. Please check Google Search Console or refresh the page status in several days.");
         }
     }
 }

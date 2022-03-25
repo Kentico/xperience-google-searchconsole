@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Indexing.v3.Data;
 using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Models;
@@ -33,5 +34,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
 
 
         WmxSite GetSite(string xperienceDomain);
+
+
+        PublishUrlNotificationResponse RequestIndexingForPage(string url, string cultureCode);
     }
 }

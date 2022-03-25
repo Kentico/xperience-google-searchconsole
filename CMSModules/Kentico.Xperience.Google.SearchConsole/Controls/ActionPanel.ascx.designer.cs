@@ -24,6 +24,15 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         protected global::System.Web.UI.WebControls.Literal ltlMessage;
 
         /// <summary>
+        /// btnIndexSingle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnIndexSingle;
+
+        /// <summary>
         /// btnGetSingleStatus control.
         /// </summary>
         /// <remarks>

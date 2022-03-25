@@ -35,7 +35,7 @@
                     return "Allowed";
                 case ROBOTS_TXT_STATE_UNSPECIFIED:
                 default:
-                    return "The page wasn't fetched or found, or the robots.txt couldn't be reached";
+                    return "Unknown";
             }
         }
     }

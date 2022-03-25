@@ -120,6 +120,23 @@ namespace Kentico.Xperience.Google.SearchConsole
 
 
         /// <summary>
+        /// Indexing requested on.
+        /// </summary>
+        [DatabaseField]
+        public virtual DateTime IndexingRequestedOn
+        {
+            get
+            {
+                return ValidationHelper.GetDateTime(GetValue("IndexingRequestedOn"), DateTimeHelper.ZERO_TIME);
+            }
+            set
+            {
+                SetValue("IndexingRequestedOn", value, DateTimeHelper.ZERO_TIME);
+            }
+        }
+
+
+        /// <summary>
         /// Deletes the object using appropriate provider.
         /// </summary>
         protected override void DeleteObject()

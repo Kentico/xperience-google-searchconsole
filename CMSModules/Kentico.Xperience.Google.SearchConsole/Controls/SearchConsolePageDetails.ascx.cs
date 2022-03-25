@@ -66,6 +66,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
             var userUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical;
             var googleUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.GoogleCanonical;
+            if (userUrl == null || googleUrl == null)
+            {
+                return $"{IconSet.Question("Unknown")} Unknown";
+            }
+
             if (userUrl == googleUrl)
             {
                 return $"{IconSet.Checked("Match")} Match";
@@ -78,7 +83,13 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
         protected string GetLastRefreshTime()
         {
-            return inspectionStatus == null ? "N/A" : inspectionStatus.InspectionResultRequestedOn.ToString();
+            return inspectionStatus == null || inspectionStatus.InspectionResultRequestedOn == DateTime.MinValue ? "N/A" : inspectionStatus.InspectionResultRequestedOn.ToString();
+        }
+
+
+        protected string GetIndexingRequestTime()
+        {
+            return inspectionStatus == null || inspectionStatus.IndexingRequestedOn == DateTime.MinValue ? "N/A" : inspectionStatus.IndexingRequestedOn.ToString();
         }
 
 
@@ -140,10 +151,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
             var icon = Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Verdict);
             var message = Verdict.GetMessage(inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Verdict);
-            var issueCount = inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues.Count;
-            if (issueCount > 0)
+            if (inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues != null)
             {
-                message = $"{issueCount} issues detected.";
+                message = $"{inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues.Count} issues detected.";
             }
             
             return $"{icon} {message}";
@@ -299,6 +309,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null ||
                 inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult == null ||
+                inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues == null ||
                 inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues.Count == 0)
             {
                 return String.Empty;
