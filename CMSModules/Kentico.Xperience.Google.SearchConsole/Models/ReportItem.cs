@@ -88,13 +88,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         }
 
 
-        public string Sitemaps
-        {
-            get;
-            set;
-        } = "N/A";
-
-
         public string LastCrawl
         {
             get;
@@ -103,20 +96,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
 
 
         public string CrawledAs
-        {
-            get;
-            set;
-        } = "N/A";
-
-
-        public string CrawlAllowed
-        {
-            get;
-            set;
-        } = "N/A";
-
-
-        public string PageFetch
         {
             get;
             set;

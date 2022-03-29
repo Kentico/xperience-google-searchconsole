@@ -11,16 +11,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
 
 
-    public partial class SearchConsolePageDetails
+    public partial class ReportFilter
     {
 
         /// <summary>
-        /// pnlNodeDetails control.
+        /// drpShowErrors control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlNodeDetails;
+        protected global::CMS.Base.Web.UI.CMSDropDownList drpShowErrors;
     }
 }

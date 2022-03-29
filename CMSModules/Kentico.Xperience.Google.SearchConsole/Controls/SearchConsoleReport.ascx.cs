@@ -7,7 +7,6 @@ using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Constants;
 using Kentico.Xperience.Google.SearchConsole.Models;
-using Kentico.Xperience.Google.SearchConsole.Pages;
 using Kentico.Xperience.Google.SearchConsole.Services;
 
 using Newtonsoft.Json;
@@ -19,33 +18,34 @@ using System.Linq;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
-    public partial class SearchConsoleReport : InlineUserControl
+    public partial class SearchConsoleReport : AbstractUserControl
     {
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
         private ISearchConsoleService searchConsoleService;
 
 
-        private TreeNode SelectedNode
+        public TreeNode SelectedNode
         {
-            get
-            {
-                return new TreeProvider().SelectSingleNode(SearchConsoleLayout.SelectedNodeID, SearchConsoleLayout.SelectedCulture);
-            }
+            get;
+            set;
         }
 
 
-        private SearchConsoleLayout SearchConsoleLayout
+        public string SelectedCulture
         {
-            get
-            {
-                return Page as SearchConsoleLayout;
-            }
+            get;
+            set;
         }
 
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            if (StopProcessing)
+            {
+                return;
+            }
 
             searchConsoleService = Service.Resolve<ISearchConsoleService>();
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
@@ -55,18 +55,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             var script = $"function openReferringUrls(id) {{ modalDialog('{url}?inspectionStatusID='+id, 'OpenReferringUrls', '900', '600', null); return false; }}";
             ScriptHelper.RegisterClientScriptBlock(this, GetType(), "openReferringUrls", script, true);
 
-            Initialize();
             PopulateReport();
         }
 
 
         private void PopulateReport()
         {
-            if (StopProcessing)
-            {
-                return;
-            }
-
             var path = SelectedNode.NodeAliasPath;
             if (SelectedNode.IsRoot())
             {
@@ -74,6 +68,35 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
             ltlHeader.Text = $"Report for section {path}/%";
 
+            var data = GetReportData();
+
+            gridReport.OnDataReload += GridReport_OnDataReload;
+            gridReport.OnExternalDataBound += GridReport_OnExternalDataBound;
+        }
+
+
+        private DataSet GridReport_OnDataReload(string completeWhere, string currentOrder, int currentTopN, string columns, int currentOffset, int currentPageSize, ref int totalRecords)
+        {
+            if (StopProcessing)
+            {
+                return null;
+            }
+
+            var data = GetReportData();
+            if (gridReport.CustomFilter == null || !(gridReport.CustomFilter is ReportFilter))
+            {
+                return ToDataSet(data);
+            }
+
+            var filter = gridReport.CustomFilter as ReportFilter;
+            data = filter.Apply(data);
+
+            return ToDataSet(data);
+        }
+
+
+        private List<ReportItem> GetReportData()
+        {
             var reportItems = new List<ReportItem>();
             foreach (var node in SelectedNode.Children)
             {
@@ -88,10 +111,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                     Url = url,
                     DocumentName = node.DocumentName
                 };
-                
+
                 var inspectionStatus = urlInspectionStatusInfoProvider.Get()
                     .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SearchConsoleLayout.SelectedCulture)
+                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedCulture)
                     .TopN(1)
                     .TypedResult
                     .FirstOrDefault();
@@ -102,13 +125,17 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                     continue;
                 }
 
-                // TODO: Sitemaps
                 var inspectUrlIndexResponse = JsonConvert.DeserializeObject<InspectUrlIndexResponse>(inspectionStatus.LastInspectionResult);
-                reportItem.LastRefresh = inspectionStatus.InspectionResultRequestedOn.ToString();
+                reportItem.InspectionStatusID = inspectionStatus.PageIndexStatusID;
                 reportItem.CoverageVerdict = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict;
                 reportItem.IndexState = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.IndexingState;
                 reportItem.FetchState = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.PageFetchState;
                 reportItem.CrawlState = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.RobotsTxtState;
+
+                if (inspectionStatus.InspectionResultRequestedOn > DateTime.MinValue)
+                {
+                    reportItem.LastRefresh = inspectionStatus.InspectionResultRequestedOn.ToString();
+                }
 
                 if (inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult != null)
                 {
@@ -125,6 +152,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                     reportItem.RichResultsVerdict = inspectUrlIndexResponse.InspectionResult.AmpResult.Verdict;
                 }
 
+                if (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls != null)
+                {
+                    reportItem.ReferringUrlCount = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls.Count;
+                }
+
                 reportItem.CanonicalUrls = new ReportCanonicalUrls
                 {
                     UserUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical,
@@ -134,96 +166,14 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 reportItems.Add(reportItem);
             }
 
-            gridReport.OnExternalDataBound += GridReport_OnExternalDataBound;
-            gridReport.DataSource = ToDataSet(reportItems);
-            gridReport.DataBind();
-        }
-
-
-        private object GridReport_OnExternalDataBound(object sender, string sourceName, object parameter)
-        {
-            DataRowView drv = parameter as DataRowView;
-            switch (sourceName)
-            {
-                case "coverage":
-                    var coverageVerdict = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{Verdict.GetIcon(coverageVerdict)} {Verdict.GetMessage(coverageVerdict)}";
-                case "index":
-                    var indexState = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{IndexingState.GetIcon(indexState)} {IndexingState.GetMessage(indexState)}";
-                case "fetch":
-                    var fetchState = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{PageFetchState.GetIcon(fetchState)} {PageFetchState.GetMessage(fetchState)}";
-                case "crawl":
-                    var crawlState = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{RobotsTxtState.GetIcon(crawlState)} {RobotsTxtState.GetMessage(crawlState)}";
-                case "mobile":
-                    var mobileVerdict = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{Verdict.GetIcon(mobileVerdict)} {Verdict.GetMessage(mobileVerdict)}";
-                case "rich":
-                    var richResultsVerdict = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{Verdict.GetIcon(richResultsVerdict)} {Verdict.GetMessage(richResultsVerdict)}";
-                case "amp":
-                    var ampVerdict = ValidationHelper.GetString(parameter, String.Empty);
-                    return $"{Verdict.GetIcon(ampVerdict)} {Verdict.GetMessage(ampVerdict)}";
-                case "referrers":
-                    var count = ValidationHelper.GetInteger(parameter, 0);
-                    if (count > 0)
-                    {
-                        var inspectionStatusId = ValidationHelper.GetInteger(drv[nameof(ReportItem.InspectionStatusID)], 0);
-                        return $"<a href='#' onclick='openReferringUrls({inspectionStatusId})'>{count}</a>";
-                    }
-
-                    break;
-                case "canonical":
-                    var reportCanonicalUrls = parameter as ReportCanonicalUrls;
-                    if (reportCanonicalUrls == null ||
-                        reportCanonicalUrls.UserUrl == null ||
-                        reportCanonicalUrls.GoogleUrl == null)
-                    {
-                        return $"{IconSet.Question("Unknown")} Unknown";
-                    }
-
-                    if (reportCanonicalUrls.UserUrl == reportCanonicalUrls.GoogleUrl)
-                    {
-                        return $"{IconSet.Checked("Match")} Match";
-                    }
-                    else
-                    {
-                        var tooltip = $"User canonical: {reportCanonicalUrls.UserUrl}, Google canonical: {reportCanonicalUrls.GoogleUrl}";
-                        return $"{IconSet.Error(tooltip)} Mismatch";
-                    }
-            }
-            return parameter;
-        }
-
-
-        private void Initialize()
-        {
-            if (searchConsoleService.GetUserCredential() == null)
-            {
-                btnAuth.Visible = true;
-                StopProcessing = true;
-                return;
-            }
-
-            if (SearchConsoleLayout.SelectedNodeID == 0 ||
-                SelectedNode == null)
-            {
-                ltlMessage.Text = "The selected page doesn't exist in the selected culture.";
-                ltlMessage.Visible = true;
-                StopProcessing = true;
-                return;
-            }
-
-            pnlReport.Visible = true;
+            return reportItems;
         }
 
 
         /// <summary>
         /// Converts a collection of objects into a <see cref="DataSet"/>.
         /// </summary>
-        protected DataSet ToDataSet<T>(IList<T> list)
+        private DataSet ToDataSet<T>(IList<T> list)
         {
             Type elementType = typeof(T);
             DataSet ds = new DataSet();
@@ -250,6 +200,64 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
 
             return ds;
+        }
+
+
+        private object GridReport_OnExternalDataBound(object sender, string sourceName, object parameter)
+        {
+            switch (sourceName)
+            {
+                case "coverage":
+                    var coverageVerdict = ValidationHelper.GetString(parameter, String.Empty);
+                    return Verdict.GetIcon(coverageVerdict);
+                case "index":
+                    var indexState = ValidationHelper.GetString(parameter, String.Empty);
+                    return IndexingState.GetIcon(indexState);
+                case "fetch":
+                    var fetchState = ValidationHelper.GetString(parameter, String.Empty);
+                    return PageFetchState.GetIcon(fetchState);
+                case "crawl":
+                    var crawlState = ValidationHelper.GetString(parameter, String.Empty);
+                    return RobotsTxtState.GetIcon(crawlState);
+                case "mobile":
+                    var mobileVerdict = ValidationHelper.GetString(parameter, String.Empty);
+                    return Verdict.GetIcon(mobileVerdict);
+                case "rich":
+                    var richResultsVerdict = ValidationHelper.GetString(parameter, String.Empty);
+                    return Verdict.GetIcon(richResultsVerdict);
+                case "amp":
+                    var ampVerdict = ValidationHelper.GetString(parameter, String.Empty);
+                    return Verdict.GetIcon(ampVerdict);
+                case "referrers":
+                    var drv = parameter as DataRowView;
+                    var count = ValidationHelper.GetInteger(drv[nameof(ReportItem.ReferringUrlCount)], 0);
+                    if (count == 0)
+                    {
+                        return 0;
+                    }
+
+                    var inspectionStatusId = ValidationHelper.GetInteger(drv[nameof(ReportItem.InspectionStatusID)], 0);
+                    return $"<a href='#' onclick='openReferringUrls({inspectionStatusId})'>{count}</a>";
+                case "canonical":
+                    var reportCanonicalUrls = parameter as ReportCanonicalUrls;
+                    if (reportCanonicalUrls == null ||
+                        reportCanonicalUrls.UserUrl == null ||
+                        reportCanonicalUrls.GoogleUrl == null)
+                    {
+                        return IconSet.Question("Unknown");
+                    }
+
+                    if (reportCanonicalUrls.UserUrl == reportCanonicalUrls.GoogleUrl)
+                    {
+                        return IconSet.Checked("Match");
+                    }
+                    else
+                    {
+                        var tooltip = $"User canonical: {reportCanonicalUrls.UserUrl}, Google canonical: {reportCanonicalUrls.GoogleUrl}";
+                        return IconSet.Error(tooltip);
+                    }
+            }
+            return parameter;
         }
     }
 }

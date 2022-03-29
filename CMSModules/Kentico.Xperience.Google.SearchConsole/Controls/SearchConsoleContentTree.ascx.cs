@@ -14,9 +14,11 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 
+using static Kentico.Xperience.Google.SearchConsole.Pages.SearchConsoleLayout;
+
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
-    public partial class SearchConsoleContentTree : InlineUserControl
+    public partial class SearchConsoleContentTree : AbstractUserControl
     {
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
 
@@ -30,41 +32,48 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
-        private SearchConsoleLayout SearchConsoleLayout
+        public string SelectedCulture
         {
-            get
-            {
-                return Page as SearchConsoleLayout;
-            }
+            get;
+            set;
         }
+
+
+        public int SelectedNodeID
+        {
+            get;
+            set;
+        }
+
+
+        public int SelectedMode
+        {
+            get;
+            set;
+        }
+
 
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            var elementUrl = ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
+            var elementUrl = GetElementUrl();
             var nodeClickScript = $@"
 function nodeSelected(nodeId) {{
-    window.location = '{elementUrl}?{nameof(SearchConsoleLayout.SelectedCulture)}={SearchConsoleLayout.SelectedCulture}'
-    +'&{nameof(SearchConsoleLayout.SelectedMode)}={SearchConsoleLayout.SelectedMode}'
-    +'&{nameof(SearchConsoleLayout.SelectedNodeID)}='+nodeId;
-}}";
-            var modeButtonClickScript = $@"
-function modeSelected(mode) {{
-    window.location = '{elementUrl}?{nameof(SearchConsoleLayout.SelectedNodeID)}={SearchConsoleLayout.SelectedNodeID}'
-    +'&{nameof(SearchConsoleLayout.SelectedCulture)}={SearchConsoleLayout.SelectedCulture}'
-    +'&{nameof(SearchConsoleLayout.SelectedMode)}='+mode;
+    window.location = '{elementUrl}?SelectedCulture={SelectedCulture}'
+    +'&SelectedMode={SelectedMode}'
+    +'&SelectedNodeID='+nodeId;
 }}";
             var cultureChangeScript = $@"
 function cultureSelected(control) {{
     var culture = control.value;
-    window.location = '{elementUrl}?{nameof(SearchConsoleLayout.SelectedNodeID)}={SearchConsoleLayout.SelectedNodeID}'
-    +'&{nameof(SearchConsoleLayout.SelectedMode)}={SearchConsoleLayout.SelectedMode}'
-    +'&{nameof(SearchConsoleLayout.SelectedCulture)}='+culture;
+    window.location = '{elementUrl}?SelectedNodeID={SelectedNodeID}'
+    +'&SelectedMode={SelectedMode}'
+    +'&SelectedCulture='+culture;
 }}";
+
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(nodeClickScript));
-            ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "modeSelected", ScriptHelper.GetScript(modeButtonClickScript));
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "cultureSelected", ScriptHelper.GetScript(cultureChangeScript));
 
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
@@ -72,9 +81,38 @@ function cultureSelected(control) {{
         }
 
 
+        protected void btnModeOverview_Click(object sender, EventArgs e)
+        {
+            ChangeMode((int)LayoutMode.Overview);
+        }
+
+
+        protected void btnModeReport_Click(object sender, EventArgs e)
+        {
+            ChangeMode((int)LayoutMode.Report);
+        }
+
+
+        private void ChangeMode(int mode)
+        {
+            var url = GetElementUrl();
+            url = URLHelper.AddParameterToUrl(url, "SelectedMode", mode.ToString());
+            url = URLHelper.AddParameterToUrl(url, "SelectedCulture", SelectedCulture);
+            url = URLHelper.AddParameterToUrl(url, "SelectedNodeID", SelectedNodeID.ToString());
+
+            URLHelper.Redirect(url);
+        }
+
+
+        private string GetElementUrl()
+        {
+            return ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
+        }
+
+
         private void InitTreeView()
         {
-            contentTree.Culture = SearchConsoleLayout.SelectedCulture;
+            contentTree.Culture = SelectedCulture;
             contentTree.NodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" class=\"ContentTreeItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
             contentTree.SelectedNodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" id=\"treeSelectedNode\" class=\"ContentTreeSelectedItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
 
@@ -83,23 +121,23 @@ function cultureSelected(control) {{
                 InnerTreeView.TreeNodePopulate += (sender, eventArgs) => SetExpandedSectionIndexedStatus(eventArgs.Node.ChildNodes);
             }
 
-            if (SearchConsoleLayout.SelectedNodeID > 0)
+            if (SelectedNodeID > 0)
             {
-                contentTree.SelectedNodeID = SearchConsoleLayout.SelectedNodeID;
+                contentTree.SelectedNodeID = SelectedNodeID;
             }
 
-            if (SearchConsoleLayout.SelectedMode == (int)SearchConsoleLayout.LayoutMode.Overview)
+            if (SelectedMode == (int)SearchConsoleLayout.LayoutMode.Overview)
             {
                 btnModeOverview.RemoveCssClass("btn-default");
                 btnModeOverview.AddCssClass("btn-primary");
             }
-            else if (SearchConsoleLayout.SelectedMode == (int)SearchConsoleLayout.LayoutMode.Report)
+            else if (SelectedMode == (int)SearchConsoleLayout.LayoutMode.Report)
             {
                 btnModeReport.RemoveCssClass("btn-default");
                 btnModeReport.AddCssClass("btn-primary");
             }
 
-            drpCulture.Value = SearchConsoleLayout.SelectedCulture;
+            drpCulture.Value = SelectedCulture;
             drpCulture.UniSelector.OnAfterClientChanged = $"cultureSelected(this);";
         }
 
@@ -109,7 +147,7 @@ function cultureSelected(control) {{
             foreach (System.Web.UI.WebControls.TreeNode node in nodes)
             {
                 var nodeId = ValidationHelper.GetInteger(node.Value, 0);
-                var page = new TreeProvider().SelectSingleNode(nodeId, SearchConsoleLayout.SelectedCulture);
+                var page = new TreeProvider().SelectSingleNode(nodeId, SelectedCulture);
                 if (page == null || page.IsRoot())
                 {
                     continue;
@@ -123,7 +161,7 @@ function cultureSelected(control) {{
 
                 var inspectionStatus = urlInspectionStatusInfoProvider.Get()
                     .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SearchConsoleLayout.SelectedCulture)
+                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedCulture)
                     .TopN(1)
                     .TypedResult
                     .FirstOrDefault();

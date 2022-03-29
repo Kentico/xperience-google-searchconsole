@@ -15,24 +15,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
     {
 
         /// <summary>
-        /// btnAuth control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.OAuthButton btnAuth;
-
-        /// <summary>
-        /// ltlMessage control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal ltlMessage;
-
-        /// <summary>
         /// pnlReport control.
         /// </summary>
         /// <remarks>

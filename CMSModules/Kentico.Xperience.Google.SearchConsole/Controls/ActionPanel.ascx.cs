@@ -21,38 +21,35 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        public bool AllowRefreshSingle
+        {
+            get;
+            set;
+        } = true;
+
+
+        public bool AllowRefreshSection
+        {
+            get;
+            set;
+        } = true;
+
+
+        public bool AllowIndexSingle
+        {
+            get;
+            set;
+        } = true;
+
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             searchConsoleService = Service.Resolve<ISearchConsoleService>();
-            if (SelectedNode != null && SelectedNode.IsRoot())
-            {
-                ltlMessage.Text = "Please select a page from the content tree to view the Google Search Console data.";
-                ltlMessage.Visible = true;
-                btnGetSingleStatus.Visible = false;
-                btnGetSectionStatus.Visible = false;
-                btnIndexSingle.Visible = false;
-                return;
-            }
-
-            if (SelectedNode == null)
-            {
-                ltlMessage.Text = "The selected page doesn't exist in the selected culture.";
-                ltlMessage.Visible = true;
-                btnGetSingleStatus.Visible = false;
-                btnGetSectionStatus.Visible = false;
-                btnIndexSingle.Visible = false;
-                return;
-            }
-
-            var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
-            if (String.IsNullOrEmpty(url))
-            {
-                btnGetSingleStatus.Visible = false;
-                btnIndexSingle.Visible = false;
-                return;
-            }
+            btnGetSingleStatus.Enabled = AllowRefreshSingle;
+            btnGetSectionStatus.Enabled = AllowRefreshSection;
+            btnIndexSingle.Enabled = AllowIndexSingle;
         }
 
 

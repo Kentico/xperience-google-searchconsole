@@ -15,30 +15,66 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
     {
 
         /// <summary>
-        /// layoutElem control.
+        /// btnAuth control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.UIControls.UILayout layoutElem;
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.OAuthButton btnAuth;
 
         /// <summary>
-        /// uipTree control.
+        /// pnlMain control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.UIControls.UILayoutPane uipTree;
+        protected global::System.Web.UI.WebControls.Panel pnlMain;
 
         /// <summary>
-        /// uipDetails control.
+        /// contentTree control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMS.UIControls.UILayoutPane uipDetails;
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleContentTree contentTree;
+
+        /// <summary>
+        /// messageContainer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl messageContainer;
+
+        /// <summary>
+        /// actionPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.ActionPanel actionPanel;
+
+        /// <summary>
+        /// consoleReport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleReport consoleReport;
+
+        /// <summary>
+        /// consoleDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsolePageDetails consoleDetails;
     }
 }

@@ -1,7 +1,11 @@
-﻿using CMS.DocumentEngine;
+﻿using CMS.Base.Web.UI;
+using CMS.Core;
+using CMS.DocumentEngine;
 using CMS.Helpers;
 using CMS.SiteProvider;
 using CMS.UIControls;
+
+using Kentico.Xperience.Google.SearchConsole.Services;
 
 using System;
 
@@ -13,7 +17,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         {
             get
             {
-                return QueryHelper.GetInteger(nameof(SelectedMode), (int)LayoutMode.Overview);
+                return QueryHelper.GetInteger("SelectedMode", (int)LayoutMode.Overview);
             }
         }
 
@@ -22,13 +26,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         {
             get
             {
-                var nodeId = QueryHelper.GetInteger(nameof(SelectedNodeID), 0);
-                if (nodeId == 0)
-                {
-                    return new TreeProvider().SelectSingleNode(SiteContext.CurrentSiteName, "/", SelectedCulture, true, SystemDocumentTypes.Root, false).NodeID;
-                }
-
-                return nodeId;
+                return QueryHelper.GetInteger("SelectedNodeID", 0);
             }
         }
 
@@ -37,7 +35,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         {
             get
             {
-                var culture = QueryHelper.GetString(nameof(SelectedCulture), String.Empty);
+                var culture = QueryHelper.GetString("SelectedCulture", String.Empty);
                 if (String.IsNullOrEmpty(culture))
                 {
                     culture = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
@@ -50,13 +48,69 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            var searchConsoleService = Service.Resolve<ISearchConsoleService>();
+            if (searchConsoleService.GetUserCredential() == null)
+            {
+                pnlMain.Visible = false;
+                btnAuth.Visible = true;
+                consoleDetails.StopProcessing = true;
+                consoleReport.StopProcessing = true;
+                return;
+            }
+
+            TreeNode selectedNode;
+            if (SelectedNodeID == 0)
+            {
+                selectedNode = new TreeProvider().SelectSingleNode(SiteContext.CurrentSiteName, "/", SelectedCulture, true, SystemDocumentTypes.Root, false);
+            }
+            else
+            {
+                selectedNode = new TreeProvider().SelectSingleNode(SelectedNodeID, SelectedCulture);
+            }
+
+            contentTree.SelectedCulture = SelectedCulture;
+            contentTree.SelectedNodeID = SelectedNodeID;
+            contentTree.SelectedMode = SelectedMode;
+
+            if (selectedNode == null)
+            {
+                messageContainer.InnerHtml = "The selected page doesn't exist in the selected culture.";
+                messageContainer.Visible = true;
+                actionPanel.AllowIndexSingle = false;
+                actionPanel.AllowRefreshSingle = false;
+                actionPanel.AllowRefreshSection = false;
+                return;
+            }
+
+            if (SelectedMode == (int)LayoutMode.Overview && selectedNode != null && selectedNode.IsRoot())
+            {
+                actionPanel.AllowIndexSingle = false;
+                actionPanel.AllowRefreshSingle = false;
+                return;
+            }
+
+            var url = DocumentURLProvider.GetAbsoluteUrl(selectedNode);
+            if (String.IsNullOrEmpty(url))
+            {
+                actionPanel.AllowIndexSingle = false;
+                actionPanel.AllowRefreshSingle = false;
+            }
+
+            actionPanel.SelectedNode = selectedNode;
+
             if (SelectedMode == (int)LayoutMode.Overview)
             {
-                uipDetails.ControlPath = "~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/SearchConsolePageDetails.ascx";
+                consoleDetails.Visible = true;
+                consoleDetails.StopProcessing = false;
+                consoleDetails.SelectedNode = selectedNode;
+                consoleDetails.SelectedCulture = SelectedCulture;
             }
             else if (SelectedMode == (int)LayoutMode.Report)
             {
-                uipDetails.ControlPath = "~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/SearchConsoleReport.ascx";
+                consoleReport.Visible = true;
+                consoleReport.StopProcessing = false;
+                consoleReport.SelectedNode = selectedNode;
+                consoleReport.SelectedCulture = SelectedCulture;
             }
         }
 

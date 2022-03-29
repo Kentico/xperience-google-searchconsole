@@ -1,14 +1,27 @@
-﻿<%@ Page Language="C#" EnableEventValidation="false" AutoEventWireup="true" Theme="Default" MasterPageFile="~/CMSMasterPages/UI/SimplePage.master"
+﻿<%@ Page Language="C#" AutoEventWireup="true" Theme="Default" MasterPageFile="~/CMSMasterPages/UI/SimplePage.master"
     CodeBehind="SearchConsoleLayout.aspx.cs" Inherits="Kentico.Xperience.Google.SearchConsole.Pages.SearchConsoleLayout" %>
 
+<%@ Register TagPrefix="uc" TagName="ContentTree" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/SearchConsoleContentTree.ascx" %>
+<%@ Register TagPrefix="uc" TagName="ConsoleReport" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/SearchConsoleReport.ascx" %>
+<%@ Register TagPrefix="uc" TagName="ConsoleDetails" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/SearchConsolePageDetails.ascx" %>
+<%@ Register TagPrefix="uc" TagName="ActionPanel" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/ActionPanel.ascx" %>
+<%@ Register TagPrefix="uc" TagName="OAuthButton" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/OAuthButton.ascx" %>
+
 <asp:Content ID="cntBody" runat="server" ContentPlaceHolderID="plcContent">
-    <cms:UILayout runat="server" ID="layoutElem">
-        <Panes>
-            <cms:UILayoutPane ID="uipTree" runat="server" Direction="West" RenderAs="div"
-                ControlPath="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/SearchConsoleContentTree.ascx" SpacingOpen="8"
-                SpacingClosed="8" Size="304" TogglerLengthOpen="32" TogglerLengthClosed="32" UseUpdatePanel="true" MinSize="330" />
-            <cms:UILayoutPane ID="uipDetails" runat="server" Direction="Center" RenderAs="div" SpacingOpen="8" SpacingClosed="8"
-                TogglerLengthOpen="32" TogglerLengthClosed="32" UseUpdatePanel="false" />
-        </Panes>
-    </cms:UILayout>
+    <uc:OAuthButton ID="btnAuth" runat="server" Visible="false" />
+    <div style="padding:30px">
+        <asp:Panel ID="pnlMain" runat="server">
+            <div style="min-width:11%" class="pull-left">
+                <uc:ContentTree ID="contentTree" runat="server" />
+            </div>
+            <div style="min-width:70%;max-width:85%;margin-left:70px;padding-bottom:100px" class="pull-left">
+                <div id="messageContainer" runat="server" visible="false" style="margin-bottom:15px" />
+                <div style="margin-bottom:40px">
+                    <uc:ActionPanel ID="actionPanel" runat="server" />
+                </div>
+                <uc:ConsoleReport ID="consoleReport" runat="server" StopProcessing="true" Visible="false" />
+                <uc:ConsoleDetails ID="consoleDetails" runat="server" StopProcessing="true" Visible="false" />
+            </div>
+        </asp:Panel>
+    </div>
 </asp:Content>

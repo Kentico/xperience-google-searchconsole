@@ -5,7 +5,6 @@ using CMS.DocumentEngine;
 using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Constants;
-using Kentico.Xperience.Google.SearchConsole.Pages;
 using Kentico.Xperience.Google.SearchConsole.Services;
 
 using Newtonsoft.Json;
@@ -24,27 +23,28 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         private UrlInspectionStatusInfo inspectionStatus;
 
 
-        private TreeNode SelectedNode
+        public TreeNode SelectedNode
         {
-            get
-            {
-                return new TreeProvider().SelectSingleNode(SearchConsoleLayout.SelectedNodeID, SearchConsoleLayout.SelectedCulture);
-            }
+            get;
+            set;
         }
 
 
-        private SearchConsoleLayout SearchConsoleLayout
+        public string SelectedCulture
         {
-            get
-            {
-                return Page as SearchConsoleLayout;
-            }
+            get;
+            set;
         }
 
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            if (StopProcessing)
+            {
+                return;
+            }
 
             searchConsoleService = Service.Resolve<ISearchConsoleService>();
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
@@ -398,23 +398,13 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
         private void Initialize()
         {
-            pnlActions.SelectedNode = SelectedNode;
-
-            if (searchConsoleService.GetUserCredential() == null)
-            {
-                btnAuth.Visible = true;
-                pnlActions.Visible = false;
-                return;
-            }
-
             var url = String.Empty;
             if (SelectedNode != null)
             {
                 url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
             }
 
-            if (SearchConsoleLayout.SelectedNodeID == 0 ||
-                SelectedNode == null ||
+            if (SelectedNode == null ||
                 SelectedNode.IsRoot() ||
                 String.IsNullOrEmpty(url))
             {
@@ -424,7 +414,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             pnlNodeDetails.Visible = true;
             inspectionStatus = urlInspectionStatusInfoProvider.Get()
                 .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SearchConsoleLayout.SelectedCulture)
+                .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedCulture)
                 .TopN(1)
                 .TypedResult
                 .FirstOrDefault();
