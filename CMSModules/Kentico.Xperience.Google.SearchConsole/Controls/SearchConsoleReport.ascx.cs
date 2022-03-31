@@ -7,7 +7,6 @@ using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Constants;
 using Kentico.Xperience.Google.SearchConsole.Models;
-using Kentico.Xperience.Google.SearchConsole.Services;
 
 using Newtonsoft.Json;
 
@@ -15,16 +14,17 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Web.UI.WebControls;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
     public partial class SearchConsoleReport : AbstractUserControl
     {
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
-        private ISearchConsoleService searchConsoleService;
+        private List<ReportItem> currentReportItems;
 
 
-        public TreeNode SelectedNode
+        public CMS.DocumentEngine.TreeNode SelectedNode
         {
             get;
             set;
@@ -47,7 +47,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return;
             }
 
-            searchConsoleService = Service.Resolve<ISearchConsoleService>();
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
 
             ScriptHelper.RegisterDialogScript(Page);
@@ -55,11 +54,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             var script = $"function openReferringUrls(id) {{ modalDialog('{url}?inspectionStatusID='+id, 'OpenReferringUrls', '900', '600', null); return false; }}";
             ScriptHelper.RegisterClientScriptBlock(this, GetType(), "openReferringUrls", script, true);
 
-            PopulateReport();
+            InitializeReportGrid();
         }
 
 
-        private void PopulateReport()
+        private void InitializeReportGrid()
         {
             var path = SelectedNode.NodeAliasPath;
             if (SelectedNode.IsRoot())
@@ -68,30 +67,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
             ltlHeader.Text = $"Report for section {path}/%";
 
-            var data = GetReportData();
-
+            gridReport.GridView.Sorting += GridView_Sorting;
             gridReport.OnDataReload += GridReport_OnDataReload;
             gridReport.OnExternalDataBound += GridReport_OnExternalDataBound;
-        }
-
-
-        private DataSet GridReport_OnDataReload(string completeWhere, string currentOrder, int currentTopN, string columns, int currentOffset, int currentPageSize, ref int totalRecords)
-        {
-            if (StopProcessing)
-            {
-                return null;
-            }
-
-            var data = GetReportData();
-            if (gridReport.CustomFilter == null || !(gridReport.CustomFilter is ReportFilter))
-            {
-                return ToDataSet(data);
-            }
-
-            var filter = gridReport.CustomFilter as ReportFilter;
-            data = filter.Apply(data);
-
-            return ToDataSet(data);
         }
 
 
@@ -200,6 +178,48 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
 
             return ds;
+        }
+
+
+        private void GridView_Sorting(object sender, GridViewSortEventArgs e)
+        {
+            var columnSortIsAscending = ValidationHelper.GetBoolean(Session[$"REPORT_{e.SortExpression}_ISASCENDING"], true);
+            columnSortIsAscending = !columnSortIsAscending;
+            Session[$"REPORT_{e.SortExpression}_ISASCENDING"] = columnSortIsAscending;
+
+            if (columnSortIsAscending)
+            {
+                currentReportItems = currentReportItems.OrderBy(item => item.GetType().GetProperty(e.SortExpression).GetValue(item)).ToList();
+            }
+            else
+            {
+                currentReportItems = currentReportItems.OrderByDescending(item => item.GetType().GetProperty(e.SortExpression).GetValue(item)).ToList();
+            }
+            
+
+            gridReport.GridView.DataSource = ToDataSet(currentReportItems);
+            gridReport.GridView.DataBind();
+        }
+
+
+        private DataSet GridReport_OnDataReload(string completeWhere, string currentOrder, int currentTopN, string columns, int currentOffset, int currentPageSize, ref int totalRecords)
+        {
+            if (StopProcessing)
+            {
+                return null;
+            }
+
+            var data = GetReportData();
+            if (gridReport.CustomFilter == null || !(gridReport.CustomFilter is ReportFilter))
+            {
+                return ToDataSet(data);
+            }
+
+            var filter = gridReport.CustomFilter as ReportFilter;
+            data = filter.Apply(data);
+
+            currentReportItems = data;
+            return ToDataSet(data);
         }
 
 

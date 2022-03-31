@@ -42,14 +42,45 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         } = true;
 
 
+        public bool AllowIndexSection
+        {
+            get;
+            set;
+        } = true;
+
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             searchConsoleService = Service.Resolve<ISearchConsoleService>();
+
+            if (SelectedNode == null)
+            {
+                btnGetSingleStatus.Enabled = false;
+                btnGetSectionStatus.Enabled = false;
+                btnIndexSingle.Enabled = false;
+                btnIndexSection.Enabled = false;
+                return;
+            }
+
             btnGetSingleStatus.Enabled = AllowRefreshSingle;
             btnGetSectionStatus.Enabled = AllowRefreshSection;
             btnIndexSingle.Enabled = AllowIndexSingle;
+            btnIndexSection.Enabled = AllowIndexSection;
+
+            var singleAlias = $"/{SelectedNode.NodeAlias}";
+            var sectionAlias = $"/{SelectedNode.NodeAlias}/%";
+            if (SelectedNode.IsRoot())
+            {
+                singleAlias = "page";
+                sectionAlias = "/%";
+            }
+
+            btnGetSingleStatus.Text = $"Refresh {singleAlias}";
+            btnGetSectionStatus.Text = $"Refresh {sectionAlias}";
+            btnIndexSingle.Text = $"Index {singleAlias}";
+            btnIndexSection.Text = $"Index {sectionAlias}";
         }
 
 
@@ -81,13 +112,13 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
 
             var result = searchConsoleService.GetInspectionResults(urlsToUpdate, SelectedNode.DocumentCulture);
-            if (result.SuccessfulRequests == urlsToUpdate.Count())
+            if (result.FailedRequests > 0)
             {
-                ShowInformation("Refresh successful.");
+                ShowError($"{result.FailedRequests}/{urlsToUpdate.Count()} refreshes failed. Please check the Event Log for more information.");
             }
             else
             {
-                ShowError($"{result.FailedRequests}/{urlsToUpdate.Count()} refreshes failed. Please check the Event Log for more information.");
+                ShowInformation("Refresh successful.");
             }
         }
 
@@ -95,14 +126,39 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         protected void btnIndexSingle_Click(object sender, EventArgs e)
         {
             var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
-            var result = searchConsoleService.RequestIndexingForPage(url, SelectedNode.DocumentCulture);
-            if (result == null)
+            var result = searchConsoleService.RequestIndexing(new string[] { url }, SelectedNode.DocumentCulture);
+            if (result.SuccessfulRequests == 1)
+            {
+                ShowInformation("Indexing request submitted. Please check Google Search Console or refresh the page status in several days.");
+            }
+            else
             {
                 ShowError("Indexing request failed. Please check the Event Log for more information.");
+            }   
+        }
+
+
+        protected void btnIndexSection_Click(object sender, EventArgs e)
+        {
+            var nodesToUpdate = SelectedNode.AllChildren.ToList();
+            nodesToUpdate.Add(SelectedNode);
+
+            var urlsToUpdate = nodesToUpdate.Select(n => DocumentURLProvider.GetAbsoluteUrl(n)).Where(url => !String.IsNullOrEmpty(url));
+            if (urlsToUpdate.Count() == 0)
+            {
+                ShowInformation("The pages in the current section do not have live site URLs.");
                 return;
             }
 
-            ShowInformation("Indexing request submitted. Please check Google Search Console or refresh the page status in several days.");
+            var result = searchConsoleService.RequestIndexing(urlsToUpdate, SelectedNode.DocumentCulture);
+            if (result.FailedRequests > 0)
+            {
+                ShowError($"{result.FailedRequests}/{urlsToUpdate.Count()} indexing request failed. Please check the Event Log for more information.");
+            }
+            else
+            {
+                ShowInformation("Indexing requests submitted. Please check Google Search Console or refresh the page statuses in several days.");
+            }
         }
     }
 }

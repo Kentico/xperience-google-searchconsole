@@ -46,7 +46,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
-        public int SelectedMode
+        public LayoutMode SelectedMode
         {
             get;
             set;
@@ -61,16 +61,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             var elementUrl = GetElementUrl();
             var nodeClickScript = $@"
 function nodeSelected(nodeId) {{
-    window.location = '{elementUrl}?SelectedCulture={SelectedCulture}'
-    +'&SelectedMode={SelectedMode}'
-    +'&SelectedNodeID='+nodeId;
+    window.location = '{elementUrl}?selectedculture={SelectedCulture}'
+    +'&selectedmode={(int)SelectedMode}'
+    +'&selectednodeid='+nodeId;
 }}";
             var cultureChangeScript = $@"
 function cultureSelected(control) {{
     var culture = control.value;
-    window.location = '{elementUrl}?SelectedNodeID={SelectedNodeID}'
-    +'&SelectedMode={SelectedMode}'
-    +'&SelectedCulture='+culture;
+    window.location = '{elementUrl}?selectednodeid={SelectedNodeID}'
+    +'&selectedmode={(int)SelectedMode}'
+    +'&selectedculture='+culture;
 }}";
 
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(nodeClickScript));
@@ -83,22 +83,22 @@ function cultureSelected(control) {{
 
         protected void btnModeOverview_Click(object sender, EventArgs e)
         {
-            ChangeMode((int)LayoutMode.Overview);
+            ChangeMode(LayoutMode.Overview);
         }
 
 
         protected void btnModeReport_Click(object sender, EventArgs e)
         {
-            ChangeMode((int)LayoutMode.Report);
+            ChangeMode(LayoutMode.Report);
         }
 
 
-        private void ChangeMode(int mode)
+        private void ChangeMode(LayoutMode mode)
         {
             var url = GetElementUrl();
-            url = URLHelper.AddParameterToUrl(url, "SelectedMode", mode.ToString());
-            url = URLHelper.AddParameterToUrl(url, "SelectedCulture", SelectedCulture);
-            url = URLHelper.AddParameterToUrl(url, "SelectedNodeID", SelectedNodeID.ToString());
+            url = URLHelper.AddParameterToUrl(url, "selectedmode", ((int)mode).ToString());
+            url = URLHelper.AddParameterToUrl(url, "selectedculture", SelectedCulture);
+            url = URLHelper.AddParameterToUrl(url, "selectednodeid", SelectedNodeID.ToString());
 
             URLHelper.Redirect(url);
         }
@@ -112,6 +112,7 @@ function cultureSelected(control) {{
 
         private void InitTreeView()
         {
+            contentTree.SelectOnlyPublished = true;
             contentTree.Culture = SelectedCulture;
             contentTree.NodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" class=\"ContentTreeItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
             contentTree.SelectedNodeTextTemplate = "<span style=\"margin-right:10px;margin-left:5px\" id=\"treeSelectedNode\" class=\"ContentTreeSelectedItem\" onclick=\"nodeSelected(##NODEID##)\">##ICON##<span class=\"Name\">##NODENAME##</span></span>";
@@ -126,12 +127,12 @@ function cultureSelected(control) {{
                 contentTree.SelectedNodeID = SelectedNodeID;
             }
 
-            if (SelectedMode == (int)SearchConsoleLayout.LayoutMode.Overview)
+            if (SelectedMode == LayoutMode.Overview)
             {
                 btnModeOverview.RemoveCssClass("btn-default");
                 btnModeOverview.AddCssClass("btn-primary");
             }
-            else if (SelectedMode == (int)SearchConsoleLayout.LayoutMode.Report)
+            else if (SelectedMode == LayoutMode.Report)
             {
                 btnModeReport.RemoveCssClass("btn-default");
                 btnModeReport.AddCssClass("btn-primary");

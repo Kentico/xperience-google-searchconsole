@@ -26,6 +26,8 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 
+using static Google.Apis.Indexing.v3.UrlNotificationsResource;
+
 [assembly: RegisterImplementation(typeof(ISearchConsoleService), typeof(DefaultSearchConsoleService), Lifestyle = Lifestyle.Singleton, Priority = RegistrationPriority.SystemDefault)]
 namespace Kentico.Xperience.Google.SearchConsole.Services
 {
@@ -254,12 +256,13 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         }
 
 
-        public PublishUrlNotificationResponse RequestIndexingForPage(string url, string cultureCode)
+        public RequestResults RequestIndexing(IEnumerable<string> urls, string cultureCode)
         {
+            var requestResults = new RequestResults();
             var userCredential = GetUserCredential();
             if (userCredential == null)
             {
-                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexingForPage),
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexing),
                     $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.");
                 return null;
             }
@@ -270,36 +273,49 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
                 HttpClientInitializer = userCredential
             });
 
-            var request = service.UrlNotifications.Publish(new UrlNotification
+            var batch = new BatchRequest(service);
+            foreach (var url in urls)
             {
-                Url = url,
-                Type = "URL_UPDATED"
-            });
+                var request = new PublishRequest(service, new UrlNotification
+                {
+                    Url = url,
+                    Type = "URL_UPDATED"
+                });
 
-            var response = request.Execute();
-            if (response.UrlNotificationMetadata != null)
-            {
-                var existingInfo = urlInspectionStatusInfoProvider.Get()
+                batch.Queue<PublishUrlNotificationResponse>(request, (content, error, i, message) => {
+                    if (!message.IsSuccessStatusCode)
+                    {
+                        requestResults.FailedRequests++;
+                        requestResults.Errors.Add(error.Message);
+                        eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexing), error.Message);
+
+                        return;
+                    }
+
+                    var existingInfo = urlInspectionStatusInfoProvider.Get()
                         .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
                         .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), cultureCode)
                         .TopN(1)
                         .TypedResult
                         .FirstOrDefault();
 
-                if (existingInfo == null)
-                {
-                    existingInfo = new UrlInspectionStatusInfo
+                    if (existingInfo == null)
                     {
-                        Url = url,
-                        Culture = cultureCode
-                    };
-                }
+                        existingInfo = new UrlInspectionStatusInfo
+                        {
+                            Url = url,
+                            Culture = cultureCode
+                        };
+                    }
 
-                existingInfo.IndexingRequestedOn = DateTime.Now;
-                urlInspectionStatusInfoProvider.Set(existingInfo);
+                    existingInfo.IndexingRequestedOn = DateTime.Now;
+                    urlInspectionStatusInfoProvider.Set(existingInfo);
+                    requestResults.SuccessfulRequests++;
+                });
             }
 
-            return response;
+            batch.ExecuteAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            return requestResults;
         }
     }
 }

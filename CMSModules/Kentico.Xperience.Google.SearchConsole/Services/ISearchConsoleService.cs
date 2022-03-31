@@ -36,6 +36,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         WmxSite GetSite(string xperienceDomain);
 
 
-        PublishUrlNotificationResponse RequestIndexingForPage(string url, string cultureCode);
+        RequestResults RequestIndexing(IEnumerable<string> urls, string cultureCode);
     }
 }

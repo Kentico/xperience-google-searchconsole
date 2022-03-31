@@ -51,6 +51,15 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl messageContainer;
 
         /// <summary>
+        /// pnlActions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlActions;
+
+        /// <summary>
         /// actionPanel control.
         /// </summary>
         /// <remarks>

@@ -10,9 +10,9 @@
     </h4>
     <div class="cms-bootstrap" style="margin-top:30px">
         <cms:UniGrid ID="gridReport" runat="server" ShowExportMenu="true" EnableViewState="false" IsLiveSite="false" FilterByQueryString="true">
-            <GridOptions AllowSorting="true" DisplayFilter="true" FilterLimit="0" FilterPath="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/ReportFilter.ascx" />
+            <GridOptions DisplayFilter="true" FilterLimit="0" FilterPath="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/ReportFilter.ascx" />
             <GridColumns>
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" AllowSorting="true" />
+                <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last refresh" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.CoverageVerdict) %>" Caption="Coverage" ExternalSourceName="coverage" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.IndexState) %>" Caption="Indexing allowed" ExternalSourceName="index" />
