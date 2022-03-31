@@ -92,6 +92,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
             {
                 actionPanel.AllowIndexSingle = false;
                 actionPanel.AllowRefreshSingle = false;
+                if (SelectedMode == LayoutMode.Overview)
+                {
+                    messageContainer.InnerHtml = "The selected page doesn't have a live site URL.";
+                    messageContainer.Visible = true;
+                }
             }
 
             if (selectedNode.Children.Count == 0)

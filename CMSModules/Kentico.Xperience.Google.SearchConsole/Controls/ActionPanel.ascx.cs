@@ -101,7 +101,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
         protected void btnGetSectionStatus_Click(object sender, EventArgs e)
         {
-            var nodesToUpdate = SelectedNode.AllChildren.ToList();
+            var nodesToUpdate = SelectedNode.Children.ToList();
             nodesToUpdate.Add(SelectedNode);
 
             var urlsToUpdate = nodesToUpdate.Select(n => DocumentURLProvider.GetAbsoluteUrl(n)).Where(url => !String.IsNullOrEmpty(url));
@@ -140,7 +140,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
         protected void btnIndexSection_Click(object sender, EventArgs e)
         {
-            var nodesToUpdate = SelectedNode.AllChildren.ToList();
+            var nodesToUpdate = SelectedNode.Children.ToList();
             nodesToUpdate.Add(SelectedNode);
 
             var urlsToUpdate = nodesToUpdate.Select(n => DocumentURLProvider.GetAbsoluteUrl(n)).Where(url => !String.IsNullOrEmpty(url));

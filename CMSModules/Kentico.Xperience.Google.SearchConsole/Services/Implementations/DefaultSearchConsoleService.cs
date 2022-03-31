@@ -262,9 +262,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             var userCredential = GetUserCredential();
             if (userCredential == null)
             {
-                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexing),
-                    $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.");
-                return null;
+                var error = $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.";
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexing), error);
+                requestResults.FailedRequests = urls.Count();
+                requestResults.Errors.Add(error);
+
+                return requestResults;
             }
 
             var service = new IndexingService(new BaseClientService.Initializer()
