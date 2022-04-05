@@ -121,7 +121,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null)
             {
-                return $"{Verdict.GetIcon(Verdict.VERDICT_UNSPECIFIED)} Inspection status for this URL has not yet been retrieved from Google.";
+                return $"{IconSet.Question("Unknown")} Inspection status for this URL has not yet been retrieved from Google.";
             }
 
             var icon = Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict);
@@ -133,7 +133,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null || inspectUrlIndexResponse.InspectionResult.AmpResult == null)
             {
-                return $"{Verdict.GetIcon(Verdict.VERDICT_UNSPECIFIED)} AMP status has not been evaluated yet.";
+                return $"{IconSet.Question("Unknown")} AMP status has not been evaluated yet.";
             }
 
             var icon = Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.AmpResult.Verdict);
@@ -146,7 +146,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null || inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult == null)
             {
-                return $"{Verdict.GetIcon(Verdict.VERDICT_UNSPECIFIED)} Mobile usability has not been evaluated yet.";
+                return $"{IconSet.Question("Unknown")} Mobile usability has not been evaluated yet.";
             }
 
             var icon = Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Verdict);
@@ -164,7 +164,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null || inspectUrlIndexResponse.InspectionResult.RichResultsResult == null)
             {
-                return $"{Verdict.GetIcon(Verdict.VERDICT_UNSPECIFIED)} Rich results have not been evaluated yet.";
+                return $"{IconSet.Question("Unknown")} Rich results have not been evaluated yet.";
             }
 
             if (inspectUrlIndexResponse.InspectionResult.RichResultsResult.DetectedItems.Count == 0)
@@ -218,8 +218,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return "N/A";
             }
 
-            var dateTime = DateTime.Parse(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.LastCrawlTime.ToString());
-            return dateTime.ToShortDateString();
+            return inspectUrlIndexResponse.InspectionResult.IndexStatusResult.LastCrawlTime.ToString();
         }
 
 
@@ -297,7 +296,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                         return $"{icon} {issue.IssueMessage}";
                     });
 
-                    result.Append($"<tr><td><a href='#' onclick=\"$cmsj('#issues-{itemWithIssues.Name}').toggle()\">{itemWithIssues.Name}</a></td><td style='display:none' id='issues-{itemWithIssues.Name}'>{String.Join("<br/>", issues)}</td></tr>");
+                    result.Append($"<tr><td><a href='#' onclick=\"$cmsj('#issues-{itemWithIssues.Name}').toggle();return false;\">{itemWithIssues.Name}</a></td><td style='display:none' id='issues-{itemWithIssues.Name}'>{String.Join("<br/>", issues)}</td></tr>");
                 }
             }
 

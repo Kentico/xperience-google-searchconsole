@@ -11,6 +11,13 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         }
 
 
+        public int NodeID
+        {
+            get;
+            set;
+        }
+
+
         public string DocumentName
         {
             get;
@@ -32,7 +39,21 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = "N/A";
 
 
-        public string CoverageVerdict
+        public string LastCrawl
+        {
+            get;
+            set;
+        } = "N/A";
+
+
+        public string CoverageState
+        {
+            get;
+            set;
+        }
+
+
+        public string VerdictState
         {
             get;
             set;
@@ -46,6 +67,13 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = Verdict.VERDICT_UNSPECIFIED;
 
 
+        public string MobileIssues
+        {
+            get;
+            set;
+        }
+
+
         public string RichResultsVerdict
         {
             get;
@@ -53,53 +81,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = Verdict.VERDICT_UNSPECIFIED;
 
 
-        public string AmpVerdict
-        {
-            get;
-            set;
-        } = Verdict.VERDICT_UNSPECIFIED;
-
-
-        public string IndexState
-        {
-            get;
-            set;
-        } = IndexingState.INDEXING_STATE_UNSPECIFIED;
-
-
-        public string FetchState
-        {
-            get;
-            set;
-        } = PageFetchState.PAGE_FETCH_STATE_UNSPECIFIED;
-
-
-        public string CrawlState
-        {
-            get;
-            set;
-        } = RobotsTxtState.ROBOTS_TXT_STATE_UNSPECIFIED;
-
-
-        public int ReferringUrlCount
+        public string RichIssues
         {
             get;
             set;
         }
-
-
-        public string LastCrawl
-        {
-            get;
-            set;
-        } = "N/A";
-
-
-        public string CrawledAs
-        {
-            get;
-            set;
-        } = "N/A";
 
 
         public ReportCanonicalUrls CanonicalUrls

@@ -23,7 +23,7 @@
                 case PARTIAL:
                     return IconSet.Warning("Valid with warnings");
                 case NEUTRAL:
-                    return IconSet.Minus("Unknown");
+                    return IconSet.Minus("Excluded");
                 case VERDICT_UNSPECIFIED:
                 default:
                     return IconSet.Question("Not fetched");
@@ -42,7 +42,7 @@
                 case PARTIAL:
                     return "Valid with warnings";
                 case NEUTRAL:
-                    return "Unknown";
+                    return "Page is not in the index, but not because of an error";
                 case VERDICT_UNSPECIFIED:
                 default:
                     return "Unknown";

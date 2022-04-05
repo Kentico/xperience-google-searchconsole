@@ -9,23 +9,19 @@
         <asp:Literal ID="ltlHeader" runat="server" />
     </h4>
     <div class="cms-bootstrap" style="margin-top:30px">
-        <cms:UniGrid ID="gridReport" runat="server" ShowExportMenu="true" EnableViewState="false" IsLiveSite="false" FilterByQueryString="true">
-            <GridOptions DisplayFilter="true" FilterLimit="0" FilterPath="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/ReportFilter.ascx" />
+        <cms:UniGrid ID="gridReport" runat="server" ShowExportMenu="true" EnableViewState="false" IsLiveSite="false">
+            <GridActions Parameters="Url">
+                <ug:Action runat="server" Name="open" OnClick="window.open('{0}');return false;" Caption="Open URL" FontIconClass="icon-arrow-right-top-square" FontIconStyle="default" />
+                <ug:Action runat="server" Name="view" CommandArgument="NodeID" Caption="Show overview" FontIconClass="icon-eye" FontIconStyle="allow" />
+            </GridActions>
             <GridColumns>
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last refresh" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.CoverageVerdict) %>" Caption="Coverage" ExternalSourceName="coverage" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.IndexState) %>" Caption="Indexing allowed" ExternalSourceName="index" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.CrawlState) %>" Caption="Crawl allowed" ExternalSourceName="crawl" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.FetchState) %>" Caption="Page fetch" ExternalSourceName="fetch" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.MobileVerdict) %>" Caption="Mobile usability" ExternalSourceName="mobile" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.RichResultsVerdict) %>" Caption="Rich results" ExternalSourceName="rich" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.AmpVerdict) %>" Caption="Amp status" ExternalSourceName="amp" />
+                <ug:Column runat="server" Source="##ALL##" Caption="Coverage" ExternalSourceName="coverage" />
+                <ug:Column runat="server" Source="##ALL##" Caption="Mobile usability" ExternalSourceName="mobile" />
+                <ug:Column runat="server" Source="##ALL##" Caption="Rich results" ExternalSourceName="rich" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.CanonicalUrls) %>" Caption="Canonical URL" ExternalSourceName="canonical" />
-                <ug:Column runat="server" Source="##ALL##" Caption="Referrers" ExternalSourceName="referrers" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.LastCrawl) %>" Caption="Last crawl" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.CrawledAs) %>" Caption="Crawled as" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.Url) %>" Caption="URL" />
             </GridColumns>
         </cms:UniGrid>
     </div>

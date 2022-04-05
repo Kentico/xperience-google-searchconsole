@@ -7,14 +7,11 @@ using CMS.Modules;
 using Google.Apis.SearchConsole.v1.Data;
 
 using Kentico.Xperience.Google.SearchConsole.Constants;
-using Kentico.Xperience.Google.SearchConsole.Pages;
 
 using Newtonsoft.Json;
 
 using System;
 using System.Linq;
-
-using static Kentico.Xperience.Google.SearchConsole.Pages.SearchConsoleLayout;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
@@ -46,31 +43,19 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
-        public LayoutMode SelectedMode
-        {
-            get;
-            set;
-        }
-
-
-
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            var elementUrl = GetElementUrl();
+            var elementUrl = ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
             var nodeClickScript = $@"
 function nodeSelected(nodeId) {{
-    window.location = '{elementUrl}?selectedculture={SelectedCulture}'
-    +'&selectedmode={(int)SelectedMode}'
-    +'&selectednodeid='+nodeId;
+    window.location = '{elementUrl}?selectedculture={SelectedCulture}&selectednodeid='+nodeId;
 }}";
             var cultureChangeScript = $@"
 function cultureSelected(control) {{
     var culture = control.value;
-    window.location = '{elementUrl}?selectednodeid={SelectedNodeID}'
-    +'&selectedmode={(int)SelectedMode}'
-    +'&selectedculture='+culture;
+    window.location = '{elementUrl}?selectednodeid={SelectedNodeID}&selectedculture='+culture;
 }}";
 
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(nodeClickScript));
@@ -78,35 +63,6 @@ function cultureSelected(control) {{
 
             urlInspectionStatusInfoProvider = Service.Resolve<IUrlInspectionStatusInfoProvider>();
             InitTreeView();
-        }
-
-
-        protected void btnModeOverview_Click(object sender, EventArgs e)
-        {
-            ChangeMode(LayoutMode.Overview);
-        }
-
-
-        protected void btnModeReport_Click(object sender, EventArgs e)
-        {
-            ChangeMode(LayoutMode.Report);
-        }
-
-
-        private void ChangeMode(LayoutMode mode)
-        {
-            var url = GetElementUrl();
-            url = URLHelper.AddParameterToUrl(url, "selectedmode", ((int)mode).ToString());
-            url = URLHelper.AddParameterToUrl(url, "selectedculture", SelectedCulture);
-            url = URLHelper.AddParameterToUrl(url, "selectednodeid", SelectedNodeID.ToString());
-
-            URLHelper.Redirect(url);
-        }
-
-
-        private string GetElementUrl()
-        {
-            return ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
         }
 
 
@@ -125,17 +81,6 @@ function cultureSelected(control) {{
             if (SelectedNodeID > 0)
             {
                 contentTree.SelectedNodeID = SelectedNodeID;
-            }
-
-            if (SelectedMode == LayoutMode.Overview)
-            {
-                btnModeOverview.RemoveCssClass("btn-default");
-                btnModeOverview.AddCssClass("btn-primary");
-            }
-            else if (SelectedMode == LayoutMode.Report)
-            {
-                btnModeReport.RemoveCssClass("btn-default");
-                btnModeReport.AddCssClass("btn-primary");
             }
 
             drpCulture.Value = SelectedCulture;
