@@ -5,4 +5,6 @@
 !LICENSE.md
 !README.md
 !.github/**/*
+!Assets/*
 !CMSModules/Kentico.Xperience.Google.SearchConsole/**/*
+!CMSSiteUtils/Export/Kentico.Xperience.Google.SearchConsole*.zip
