@@ -11,18 +11,19 @@
     <uc:OAuthButton ID="btnAuth" runat="server" Visible="false" />
     <div style="padding:30px">
         <asp:Panel ID="pnlMain" runat="server">
-            <div class="pull-left">
+            <asp:Panel ID="pnlActions" runat="server">
+                <div style="margin-bottom:40px">
+                    <uc:ActionPanel ID="actionPanel" runat="server" />
+                </div>
+            </asp:Panel>
+            <div style="display:inline-flex;width:100%">
                 <uc:ContentTree ID="contentTree" runat="server" />
-            </div>
-            <div style="min-width:60%;margin-left:70px;padding-bottom:100px" class="pull-left">
-                <div id="messageContainer" runat="server" visible="false" style="margin-bottom:15px" />
-                <asp:Panel ID="pnlActions" runat="server">
-                    <div style="margin-bottom:40px">
-                        <uc:ActionPanel ID="actionPanel" runat="server" />
+                <div style="min-width:60%;margin-left:70px;padding-bottom:100px">
+                    <uc:ConsoleReport ID="consoleReport" runat="server" StopProcessing="true" />
+                    <div style="padding-top:10px">
+                        <uc:ConsoleDetails ID="consoleDetails" runat="server" StopProcessing="true" />
                     </div>
-                </asp:Panel>
-                <uc:ConsoleReport ID="consoleReport" runat="server" StopProcessing="true" />
-                <uc:ConsoleDetails ID="consoleDetails" runat="server" StopProcessing="true" />
+                </div>
             </div>
         </asp:Panel>
     </div>

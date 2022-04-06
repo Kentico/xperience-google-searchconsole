@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web.UI.WebControls;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
@@ -44,6 +45,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
             if (StopProcessing)
             {
+                pnlReport.Visible = false;
                 return;
             }
 
@@ -121,23 +123,25 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                     if (inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues != null &&
                         inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues.Count > 0)
                     {
-                        reportItem.MobileIssues = String.Join(", ", inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues.Select(i => i.Message));
+                        reportItem.MobileIssues = inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Issues;
                     }
                 }
 
                 if (inspectUrlIndexResponse.InspectionResult.RichResultsResult != null)
                 {
-                    List<string> richIssues = new List<string>();
+                    List<RichResultsIssue> richIssues = new List<RichResultsIssue>();
                     foreach (var detectedItem in inspectUrlIndexResponse.InspectionResult.RichResultsResult.DetectedItems.Where(item => item.Items.Count > 0))
+                    foreach (var itemWithIssues in detectedItem.Items.Where(item => item.Issues.Count > 0))
+                    foreach (var issue in itemWithIssues.Issues)
                     {
-                        foreach (var itemWithIssues in detectedItem.Items.Where(item => item.Issues.Count > 0))
-                        {
-                            richIssues.AddRange(itemWithIssues.Issues.Select(issue => issue.IssueMessage));
-                        }
+                        // Format issue message to include the detected item
+                        issue.IssueMessage = $"{itemWithIssues.Name}: {issue.IssueMessage}";
+                        richIssues.Add(issue);
+                        
                     }
 
                     reportItem.RichResultsVerdict = inspectUrlIndexResponse.InspectionResult.RichResultsResult.Verdict;
-                    reportItem.RichIssues = String.Join(", ", richIssues);
+                    reportItem.RichIssues = richIssues;
                 }
 
                 if (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.LastCrawlTime != null)
@@ -265,23 +269,40 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
                     return $"{Verdict.GetIcon(verdictState)} {coverageState}";
                 case "mobile":
+                    var mobileIssues = drv[nameof(ReportItem.MobileIssues)] as IEnumerable<MobileUsabilityIssue>;
                     var mobileVerdict = ValidationHelper.GetString(drv[nameof(ReportItem.MobileVerdict)], String.Empty);
-                    if (mobileVerdict == Verdict.PARTIAL || mobileVerdict == Verdict.FAIL)
+                    if (mobileIssues == null || mobileIssues.Count() == 0)
                     {
-                        var issues = ValidationHelper.GetString(drv[nameof(ReportItem.MobileIssues)], String.Empty);
-                        return $"{Verdict.GetIcon(mobileVerdict)} {issues}";
+                        return Verdict.GetIcon(mobileVerdict);
                     }
 
-                    return Verdict.GetIcon(mobileVerdict);
+                    var mobileIssueText = new StringBuilder();
+                    foreach (var issue in mobileIssues)
+                    {
+                        mobileIssueText.Append(Severity.GetIcon(issue.Severity))
+                            .Append(" ")
+                            .Append(issue.Message)
+                            .Append("<br/>");
+                    }
+                    return mobileIssueText;
+                    
                 case "rich":
+                    var richIssues = drv[nameof(ReportItem.RichIssues)] as IEnumerable<RichResultsIssue>;
                     var richResultsVerdict = ValidationHelper.GetString(drv[nameof(ReportItem.RichResultsVerdict)], String.Empty);
-                    if (richResultsVerdict == Verdict.PARTIAL || richResultsVerdict == Verdict.FAIL)
+                    if (richIssues == null || richIssues.Count() == 0)
                     {
-                        var issues = ValidationHelper.GetString(drv[nameof(ReportItem.RichIssues)], String.Empty);
-                        return $"{Verdict.GetIcon(richResultsVerdict)} {issues}";
+                        return Verdict.GetIcon(richResultsVerdict);
                     }
 
-                    return Verdict.GetIcon(richResultsVerdict);
+                    var richIssueText = new StringBuilder();
+                    foreach (var issue in richIssues)
+                    {
+                        richIssueText.Append(Severity.GetIcon(issue.Severity))
+                            .Append(" ")
+                            .Append(issue.IssueMessage)
+                            .Append("<br/>");
+                    }
+                    return richIssueText.ToString();
                 case "canonical":
                     var reportCanonicalUrls = parameter as ReportCanonicalUrls;
                     if (reportCanonicalUrls == null ||

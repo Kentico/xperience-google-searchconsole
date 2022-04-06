@@ -1,4 +1,8 @@
-﻿using Kentico.Xperience.Google.SearchConsole.Constants;
+﻿using Google.Apis.SearchConsole.v1.Data;
+
+using Kentico.Xperience.Google.SearchConsole.Constants;
+
+using System.Collections.Generic;
 
 namespace Kentico.Xperience.Google.SearchConsole.Models
 {
@@ -67,7 +71,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = Verdict.VERDICT_UNSPECIFIED;
 
 
-        public string MobileIssues
+        public IEnumerable<MobileUsabilityIssue> MobileIssues
         {
             get;
             set;
@@ -81,7 +85,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
         } = Verdict.VERDICT_UNSPECIFIED;
 
 
-        public string RichIssues
+        public IEnumerable<RichResultsIssue> RichIssues
         {
             get;
             set;

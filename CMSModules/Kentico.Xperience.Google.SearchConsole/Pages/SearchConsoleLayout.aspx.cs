@@ -15,12 +15,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             var searchConsoleService = Service.Resolve<ISearchConsoleService>();
-            /*if (searchConsoleService.GetUserCredential() == null)
+            if (searchConsoleService.GetUserCredential() == null)
             {
                 pnlMain.Visible = false;
                 btnAuth.Visible = true;
                 return;
-            }*/
+            }
 
             var selectedNodeId = QueryHelper.GetInteger("selectednodeid", 0);
             var selectedCulture = QueryHelper.GetString("selectedculture", String.Empty);
@@ -45,8 +45,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
 
             if (selectedNode == null)
             {
-                messageContainer.InnerHtml = "The selected page doesn't exist in the selected culture.";
-                messageContainer.Visible = true;
+                ShowInformation("The selected page doesn't exist in the selected culture.");
                 pnlActions.Visible = false;
                 return;
             }

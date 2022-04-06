@@ -15,13 +15,13 @@
                 <ug:Action runat="server" Name="view" CommandArgument="NodeID" Caption="Show overview" FontIconClass="icon-eye" FontIconStyle="allow" />
             </GridActions>
             <GridColumns>
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last refresh" />
-                <ug:Column runat="server" Source="##ALL##" Caption="Coverage" ExternalSourceName="coverage" />
-                <ug:Column runat="server" Source="##ALL##" Caption="Mobile usability" ExternalSourceName="mobile" />
-                <ug:Column runat="server" Source="##ALL##" Caption="Rich results" ExternalSourceName="rich" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.CanonicalUrls) %>" Caption="Canonical URL" ExternalSourceName="canonical" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.LastCrawl) %>" Caption="Last crawl" />
+                <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" Wrap="false" />
+                <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last refresh" Wrap="false" />
+                <ug:Column runat="server" Source="##ALL##" Caption="Coverage" ExternalSourceName="coverage" Wrap="false" />
+                <ug:Column runat="server" Source="##ALL##" Caption="Mobile usability" ExternalSourceName="mobile" Wrap="false" />
+                <ug:Column runat="server" Source="##ALL##" Caption="Rich results" ExternalSourceName="rich" Wrap="false" />
+                <ug:Column runat="server" Source="<%# nameof(ReportItem.CanonicalUrls) %>" Caption="Canonical URL" ExternalSourceName="canonical" Wrap="false" />
+                <ug:Column runat="server" Source="<%# nameof(ReportItem.LastCrawl) %>" Caption="Last crawl" Wrap="false" />
             </GridColumns>
         </cms:UniGrid>
     </div>

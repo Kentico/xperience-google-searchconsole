@@ -33,24 +33,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         protected global::System.Web.UI.WebControls.Panel pnlMain;
 
         /// <summary>
-        /// contentTree control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleContentTree contentTree;
-
-        /// <summary>
-        /// messageContainer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl messageContainer;
-
-        /// <summary>
         /// pnlActions control.
         /// </summary>
         /// <remarks>
@@ -67,6 +49,15 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Kentico.Xperience.Google.SearchConsole.Controls.ActionPanel actionPanel;
+
+        /// <summary>
+        /// contentTree control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleContentTree contentTree;
 
         /// <summary>
         /// consoleReport control.
