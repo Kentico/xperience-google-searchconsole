@@ -11,7 +11,7 @@ This custom module allows Xperience users to view the indexed status of your Xpe
 ### Import the custom module
 
 1. Open your CMS project in __Visual Studio__.
-1. Install the _Google.Apis.SearchConsole.v1_ and _Google.Apis.Indexing.v3_ NuGet packages in the CMS project.
+1. Install the _Google.Apis.SearchConsole.v1_ and _Google.Apis.Indexing.v3_ NuGet packages in the CMS project. This integration was tested using the __1.56.0.xx__ versions of both libraries.
 1. Download the latest export package from the [/CMSSiteUtils/Export](/CMSSiteUtils/Export) folder.
 1. In the Xperience adminstration, open the __Sites__ application.
 1. [Import](https://docs.xperience.io/deploying-websites/exporting-and-importing-sites/importing-a-site-or-objects) the downloaded package with the __Import files__ and __Import code files__ [settings](https://docs.xperience.io/deploying-websites/exporting-and-importing-sites/importing-a-site-or-objects#Importingasiteorobjects-Import-Objectselectionsettings) enabled.
@@ -65,4 +65,4 @@ If a page isn't indexed in Google Search Console, or it needs to be re-indexed a
 
 ![Index buttons](/Assets/indexbuttons.png)
 
-Note that these buttons only _request_ that your pages be indexed, but the actual indexing by Google can take several days. After requesting indexing, you will need to wait a few days and either [refresh](#refreshing-page-statuses) the data, or view the status in Google Search Console directly. Similarly to refreshing statuses, the [API we use](https://developers.google.com/search/apis/indexing-api/v3/quota-pricing) for requesting page indexing has limitations. By default, you can make 200 indexing requests per day, so only request indexing when necessary, and be sure to check the "Indexing requested on" value on a page's __overview__ to make sure it hasn't already been requested recently.
+Note that these buttons only _request_ that your pages be indexed, but the actual indexing by Google can take several days. After requesting indexing, you will need to wait a few days and either [refresh](#refreshing-page-statuses) the data, or view the status in Google Search Console directly. Similarly to refreshing statuses, [the API we use](https://developers.google.com/search/apis/indexing-api/v3/quota-pricing) for requesting page indexing has limitations. By default, you can make 200 indexing requests per day, so only request indexing when necessary, and be sure to check the "Indexing requested on" value on a page's __overview__ to make sure it hasn't already been requested recently.
