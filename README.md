@@ -45,11 +45,7 @@ After [installing](#import-the-custom-module) and [authenticating](#authenticate
 
 The __content tree__ displays all pages of your site and their overall Google Search Console indexing status. Pages that do not have live site URLs will not have an icon next to them. The possible icons are:
 
-- __Black "question"__: The indexing status has not been [refreshed](#refreshing-page-statuses) yet.
-- __Blue "minus"__: The page is not indexed, but not because of an error.
-- __Yellow "warning"__: The page is indexed but has warnings.
-- __Red "x"__: The page is not indexed due to errors.
-- __Green "check"__: The page is indexed and has no errors.
+![Icon legend](/Assets/legend.png)
 
 The __report__ section displays the details of the selected page's _direct_ children. The "Coverage," "Mobile usability," and "Rich results" columns will list any errors or warnings with the page, or a green checkmark if it is valid. Click the green "eye" icon to select that page from the content tree on the left and see its overview and report. The "arrow" icon will open the page's live site URL. You can export the details of these pages in multiple formats (e.g. Excel) by clicking the menu in the top-left of the grid. For example, if your articles have some mobile usability errors that need to be resolved by a front-end developer, you can export a full report of your article's issues as an Excel file and email it to your developers to be fixed!
 
