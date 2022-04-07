@@ -90,12 +90,5 @@ namespace Kentico.Xperience.Google.SearchConsole.Models
             get;
             set;
         }
-
-
-        public ReportCanonicalUrls CanonicalUrls
-        {
-            get;
-            set;
-        }
     }
 }

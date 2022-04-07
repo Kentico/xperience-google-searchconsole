@@ -149,12 +149,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                     reportItem.LastCrawl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.LastCrawlTime.ToString();
                 }
 
-                reportItem.CanonicalUrls = new ReportCanonicalUrls
-                {
-                    UserUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical,
-                    GoogleUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.GoogleCanonical
-                };
-
                 reportItems.Add(reportItem);
             }
 
@@ -303,24 +297,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                             .Append("<br/>");
                     }
                     return richIssueText.ToString();
-                case "canonical":
-                    var reportCanonicalUrls = parameter as ReportCanonicalUrls;
-                    if (reportCanonicalUrls == null ||
-                        reportCanonicalUrls.UserUrl == null ||
-                        reportCanonicalUrls.GoogleUrl == null)
-                    {
-                        return IconSet.Question("Unknown");
-                    }
-
-                    if (reportCanonicalUrls.UserUrl == reportCanonicalUrls.GoogleUrl)
-                    {
-                        return IconSet.Checked("Match");
-                    }
-                    else
-                    {
-                        var tooltip = $"User canonical: {reportCanonicalUrls.UserUrl}, Google canonical: {reportCanonicalUrls.GoogleUrl}";
-                        return IconSet.Error(tooltip);
-                    }
             }
             return parameter;
         }
