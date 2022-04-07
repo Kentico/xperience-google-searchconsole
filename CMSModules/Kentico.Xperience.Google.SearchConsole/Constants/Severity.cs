@@ -1,18 +1,33 @@
-﻿namespace Kentico.Xperience.Google.SearchConsole.Constants
+﻿using System;
+
+namespace Kentico.Xperience.Google.SearchConsole.Constants
 {
     /// <summary>
-    /// https://developers.google.com/webmaster-tools/v1/urlInspection.index/UrlInspectionResult#Severity
+    /// Contains constants from the Google Search Console API representing the severity of an issue.
     /// </summary>
-    public class Severity
+    /// <remarks>
+    /// See <see href="https://developers.google.com/webmaster-tools/v1/urlInspection.index/UrlInspectionResult#Severity"/>.
+    /// </remarks>
+    public class Severity : GoogleApiConstant
     {
-        public const string SEVERITY_UNSPECIFIED = "SEVERITY_UNSPECIFIED";
-        public const string WARNING = "WARNING";
         public const string ERROR = "ERROR";
+        public const string WARNING = "WARNING";
+        public const string SEVERITY_UNSPECIFIED = "SEVERITY_UNSPECIFIED";
 
 
-        public static string GetIcon(string severity)
+        /// <summary>
+        /// Initalizes a new instance of the <see cref="Severity"/> class.
+        /// </summary>
+        /// <param name="constantValue">A constant value from the <see cref="Severity"/> class.</param>
+        public Severity(string constantValue) : base(constantValue)
         {
-            switch (severity)
+
+        }
+
+
+        public override string GetIcon()
+        {
+            switch (constantValue)
             {
                 case WARNING:
                     return IconSet.Warning("Warning");
@@ -20,8 +35,14 @@
                     return IconSet.Error("Error");
                 case SEVERITY_UNSPECIFIED:
                 default:
-                    return IconSet.Question("Not fetched");
+                    return IconSet.Unknown("Unknown");
             }
+        }
+
+
+        public override string GetMessage()
+        {
+            throw new NotImplementedException();
         }
     }
 }

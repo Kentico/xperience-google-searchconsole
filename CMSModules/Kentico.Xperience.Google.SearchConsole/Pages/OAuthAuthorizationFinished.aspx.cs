@@ -5,6 +5,10 @@ using System;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
+    /// <summary>
+    /// A dialog page that the user is redirected to after the <see cref="OAuthCallback"/> page verifies
+    /// the Google OAuth response and saves the token. Displays a success or error message to the user.
+    /// </summary>
     public partial class OAuthAuthorizationFinished : CMSModalPage
     {
         protected void Page_Load(object sender, EventArgs e)

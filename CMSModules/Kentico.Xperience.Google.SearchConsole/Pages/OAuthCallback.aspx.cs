@@ -10,6 +10,11 @@ using System.Threading;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
+    /// <summary>
+    /// The redirect page for the Google OAuth process. Google should provide a code in the query string,
+    /// which is used to obtain a reusable token. Redirects to <see cref="OAuthAuthorizationFinished"/> to
+    /// display the results to the user.
+    /// </summary>
     public partial class OAuthCallback : CMSPage
     {
         protected void Page_Load(object sender, EventArgs e)

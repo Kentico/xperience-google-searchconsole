@@ -2,6 +2,9 @@
 
 namespace Kentico.Xperience.Google.SearchConsole.Models
 {
+    /// <summary>
+    /// Represents the results of a batch request to the Google APIs.
+    /// </summary>
     public class RequestResults
     {
         /// <summary>

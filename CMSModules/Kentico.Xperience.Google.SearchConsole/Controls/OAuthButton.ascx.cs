@@ -11,16 +11,27 @@ using System.Threading;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
+    /// <summary>
+    /// A button which initiates the Google OAuth process in a popup window. Expects the client_secret.json file
+    /// to be present in the /App_Data folder.
+    /// </summary>
     public partial class OAuthButton : AbstractUserControl
     {
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            InitButton();
+            if (!StopProcessing)
+            {
+                InitButton();
+            }
         }
 
 
+        /// <summary>
+        /// Registers the onClick javascript for the authentication button. If the <see cref="ISearchConsoleService.GoogleAuthorizationCodeFlow"/>
+        /// is not initialized, the button is disabled.
+        /// </summary>
         private void InitButton()
         {
             var searchConsoleService = Service.Resolve<ISearchConsoleService>();

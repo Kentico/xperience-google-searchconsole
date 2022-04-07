@@ -11,6 +11,10 @@ using System.Text;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
+    /// <summary>
+    /// A dialog page that displays the referring URLs found in a <see cref="UrlInspectionStatusInfo.LastInspectionResult"/>,
+    /// which is obtained using an ID in the query string.
+    /// </summary>
     public partial class ReferringUrlsDialog : CMSModalPage
     {
         protected void Page_Load(object sender, EventArgs e)

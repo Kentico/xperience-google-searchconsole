@@ -15,6 +15,10 @@ using System.Linq;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
+    /// <summary>
+    /// A control which displays the content tree and a site culture selector. When a node is clicked,
+    /// the current page is refreshed with the selected node's ID and culture in the query string parameters.
+    /// </summary>
     public partial class SearchConsoleContentTree : AbstractUserControl
     {
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
@@ -29,6 +33,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// The culture selected by the user.
+        /// </summary>
         public string SelectedCulture
         {
             get;
@@ -36,6 +43,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// The node ID selected by the user.
+        /// </summary>
         public int SelectedNodeID
         {
             get;
@@ -47,15 +57,15 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             base.OnLoad(e);
 
-            var elementUrl = ApplicationUrlHelper.GetElementUrl("Kentico.Xperience.Google.SearchConsole", "GoogleSearchConsole");
+            var baseUrl = RequestContext.URL.AbsolutePath;
             var nodeClickScript = $@"
 function nodeSelected(nodeId) {{
-    window.location = '{elementUrl}?selectedculture={SelectedCulture}&selectednodeid='+nodeId;
+    window.location = '{baseUrl}?selectedculture={SelectedCulture}&selectednodeid='+nodeId;
 }}";
             var cultureChangeScript = $@"
 function cultureSelected(control) {{
     var culture = control.value;
-    window.location = '{elementUrl}?selectednodeid={SelectedNodeID}&selectedculture='+culture;
+    window.location = '{baseUrl}?selectednodeid={SelectedNodeID}&selectedculture='+culture;
 }}";
 
             ScriptHelper.RegisterClientScriptBlock(Page, typeof(string), "nodeSelected", ScriptHelper.GetScript(nodeClickScript));
@@ -66,6 +76,9 @@ function cultureSelected(control) {{
         }
 
 
+        /// <summary>
+        /// Sets content tree values and event handlers.
+        /// </summary>
         private void InitTreeView()
         {
             contentTree.SelectOnlyPublished = true;
@@ -88,6 +101,11 @@ function cultureSelected(control) {{
         }
 
 
+        /// <summary>
+        /// The event handler which is triggered when a node is expanded. Gets the <see cref="UrlInspectionStatusInfo"/> for
+        /// each new node in the content tree and renders the appropriate icon.
+        /// </summary>
+        /// <param name="nodes">The new nodes in the content tree that were revealed as a result of expanding a section.</param>
         private void SetExpandedSectionIndexedStatus(System.Web.UI.WebControls.TreeNodeCollection nodes)
         {
             foreach (System.Web.UI.WebControls.TreeNode node in nodes)
@@ -114,12 +132,12 @@ function cultureSelected(control) {{
 
                 if (inspectionStatus == null || String.IsNullOrEmpty(inspectionStatus.LastInspectionResult))
                 {
-                    node.Text += IconSet.Question("Unknown");
+                    node.Text += IconSet.Unknown("Unknown");
                     continue;
                 }
 
                 var inspectUrlIndexResponse = JsonConvert.DeserializeObject<InspectUrlIndexResponse>(inspectionStatus.LastInspectionResult);
-                node.Text += Verdict.GetIcon(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict);
+                node.Text += new Verdict(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict).GetIcon();
             }
         }
     }

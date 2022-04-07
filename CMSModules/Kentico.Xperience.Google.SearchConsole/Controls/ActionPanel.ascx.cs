@@ -9,11 +9,17 @@ using System.Linq;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
+    /// <summary>
+    /// A control containing the available actions for the Google Search Console application UI.
+    /// </summary>
     public partial class ActionPanel : AbstractUserControl
     {
         private ISearchConsoleService searchConsoleService;
 
 
+        /// <summary>
+        /// The node that has been selected from the content tree.
+        /// </summary>
         public TreeNode SelectedNode
         {
             get;
@@ -21,6 +27,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// If true, the <see cref="SelectedNode"/> can be refreshed.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
         public bool AllowRefreshSingle
         {
             get;
@@ -28,6 +40,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         } = true;
 
 
+        /// <summary>
+        /// If true, the direct children of the <see cref="SelectedNode"/> can be refreshed.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
         public bool AllowRefreshSection
         {
             get;
@@ -35,6 +53,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         } = true;
 
 
+        /// <summary>
+        /// If true, indexing of the <see cref="SelectedNode"/> can be requested.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
         public bool AllowIndexSingle
         {
             get;
@@ -42,6 +66,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         } = true;
 
 
+        /// <summary>
+        /// If true, indexing of the direct children of the <see cref="SelectedNode"/> can be requested.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
         public bool AllowIndexSection
         {
             get;
@@ -84,6 +114,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Click handler for the "Refresh single" button. Gets the Google Search Console indexing status for
+        /// the <see cref="SelectedNode"/> and stores it in the database.
+        /// </summary>
         protected void btnGetSingleStatus_Click(object sender, EventArgs e)
         {
             var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
@@ -99,6 +133,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Click handler for the "Refresh section" button. Gets the Google Search Console indexing statuses for
+        /// the <see cref="SelectedNode"/>'s direct children and stores them in the database.
+        /// </summary>
         protected void btnGetSectionStatus_Click(object sender, EventArgs e)
         {
             var nodesToUpdate = SelectedNode.Children.ToList();
@@ -123,6 +161,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Click handler for the "Index single" button. Requests that the <see cref="SelectedNode"/> be indexed by Google,
+        /// and stores the request time in the database.
+        /// </summary>
         protected void btnIndexSingle_Click(object sender, EventArgs e)
         {
             var url = DocumentURLProvider.GetAbsoluteUrl(SelectedNode);
@@ -138,6 +180,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Click handler for the "Index section" button. Requests that the direct children of the <see cref="SelectedNode"/>
+        /// be indexed by Google, and stores the request times in the database.
+        /// </summary>
         protected void btnIndexSection_Click(object sender, EventArgs e)
         {
             var nodesToUpdate = SelectedNode.Children.ToList();

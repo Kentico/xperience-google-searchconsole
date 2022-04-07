@@ -1,39 +1,52 @@
 ﻿namespace Kentico.Xperience.Google.SearchConsole.Constants
 {
     /// <summary>
-    /// https://developers.google.com/webmaster-tools/v1/urlInspection.index/UrlInspectionResult#verdict
+    /// Contains constants from the Google Search Console API representing the overall verdict of an inspection result.
     /// </summary>
-    public class Verdict
+    /// <remarks>
+    /// See <see href="https://developers.google.com/webmaster-tools/v1/urlInspection.index/UrlInspectionResult#verdict"/>.
+    /// </remarks>
+    public class Verdict : GoogleApiConstant
     {
-        public const string VERDICT_UNSPECIFIED = "VERDICT_UNSPECIFIED";
         public const string PASS = "PASS";
-        public const string PARTIAL = "PARTIAL";
         public const string FAIL = "FAIL";
+        public const string PARTIAL = "PARTIAL";
         public const string NEUTRAL = "NEUTRAL";
+        public const string VERDICT_UNSPECIFIED = "VERDICT_UNSPECIFIED";
 
 
-        public static string GetIcon(string verdict)
+        /// <summary>
+        /// Initalizes a new instance of the <see cref="Verdict"/> class.
+        /// </summary>
+        /// <param name="constantValue">A constant value from the <see cref="Verdict"/> class.</param>
+        public Verdict(string constantValue) : base(constantValue)
         {
-            switch (verdict)
+
+        }
+
+
+        public override string GetIcon()
+        {
+            switch (constantValue)
             {
                 case PASS:
-                    return IconSet.Checked("Valid");
+                    return IconSet.Success("Valid");
                 case FAIL:
                     return IconSet.Error("Error");
                 case PARTIAL:
                     return IconSet.Warning("Valid with warnings");
                 case NEUTRAL:
-                    return IconSet.Minus("Excluded");
+                    return IconSet.Ambiguous("Excluded");
                 case VERDICT_UNSPECIFIED:
                 default:
-                    return IconSet.Question("Not fetched");
+                    return IconSet.Unknown("Not fetched");
             }
         }
 
 
-        public static string GetMessage(string verdict)
+        public override string GetMessage()
         {
-            switch (verdict)
+            switch (constantValue)
             {
                 case PASS:
                     return "Valid";

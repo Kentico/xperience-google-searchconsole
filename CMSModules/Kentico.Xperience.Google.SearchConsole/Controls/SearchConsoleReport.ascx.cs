@@ -19,20 +19,19 @@ using System.Web.UI.WebControls;
 
 namespace Kentico.Xperience.Google.SearchConsole.Controls
 {
+    /// <summary>
+    /// A control which displays select <see cref="UrlInspectionStatusInfo"/> details for a section of the content tree. 
+    /// </summary>
     public partial class SearchConsoleReport : AbstractUserControl
     {
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
         private List<ReportItem> currentReportItems;
 
 
+        /// <summary>
+        /// The node selected by the user, whose direct children should be displayed.
+        /// </summary>
         public CMS.DocumentEngine.TreeNode SelectedNode
-        {
-            get;
-            set;
-        }
-
-
-        public string SelectedCulture
         {
             get;
             set;
@@ -60,6 +59,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Sets the report header and registers UniGrid event handlers.
+        /// </summary>
         private void InitializeReportGrid()
         {
             var path = SelectedNode.NodeAliasPath;
@@ -76,6 +78,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Gets a list of <see cref="ReportItem"/>s for displaying in the report.
+        /// </summary>
         private List<ReportItem> GetReportData()
         {
             var reportItems = new List<ReportItem>();
@@ -96,7 +101,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
                 var inspectionStatus = urlInspectionStatusInfoProvider.Get()
                     .WhereEquals(nameof(UrlInspectionStatusInfo.Url), url)
-                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedCulture)
+                    .WhereEquals(nameof(UrlInspectionStatusInfo.Culture), SelectedNode.DocumentCulture)
                     .TopN(1)
                     .TypedResult
                     .FirstOrDefault();
@@ -108,7 +113,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 }
 
                 var inspectUrlIndexResponse = JsonConvert.DeserializeObject<InspectUrlIndexResponse>(inspectionStatus.LastInspectionResult);
-                reportItem.InspectionStatusID = inspectionStatus.PageIndexStatusID;
+                reportItem.PageIndexStatusID = inspectionStatus.PageIndexStatusID;
                 reportItem.VerdictState = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.Verdict;
                 reportItem.CoverageState = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.CoverageState;
                 
@@ -189,6 +194,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Event handler for the UniGrid's individual row actions.
+        /// </summary>
         private void GridReport_OnAction(string actionName, object actionArgument)
         {
             switch (actionName)
@@ -207,6 +215,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Event handler for the UniGrid's column sorting. As standard SQL sorting can't be applied to the <see cref="currentReportItems"/>,
+        /// sorting is manually applied in this event.
+        /// </summary>
         private void GridView_Sorting(object sender, GridViewSortEventArgs e)
         {
             var columnSortIsAscending = ValidationHelper.GetBoolean(Session[$"REPORT_{e.SortExpression}_ISASCENDING"], true);
@@ -228,6 +240,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Gets the data to render in the UniGrid and saves the data in <see cref="currentReportItems"/> to be sorted later. As the
+        /// UniGrid doesn't utilize SQL data collection, all parameters are ignored.
+        /// </summary>
         private DataSet GridReport_OnDataReload(string completeWhere, string currentOrder, int currentTopN, string columns, int currentOffset, int currentPageSize, ref int totalRecords)
         {
             if (StopProcessing)
@@ -248,6 +264,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// Event handler for the rendering of individual UniGrid values.
+        /// </summary>
         private object GridReport_OnExternalDataBound(object sender, string sourceName, object parameter)
         {
             var drv = parameter as DataRowView;
@@ -255,25 +274,25 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             {
                 case "coverage":
                     var coverageState = ValidationHelper.GetString(drv[nameof(ReportItem.CoverageState)], String.Empty);
-                    var verdictState = ValidationHelper.GetString(drv[nameof(ReportItem.VerdictState)], String.Empty);
-                    if (verdictState == Verdict.PASS)
+                    var verdict = new Verdict(ValidationHelper.GetString(drv[nameof(ReportItem.VerdictState)], Verdict.VERDICT_UNSPECIFIED));
+                    if (verdict.constantValue == Verdict.PASS)
                     {
-                        return Verdict.GetIcon(verdictState);
+                        return verdict.GetIcon();
                     }
 
-                    return $"{Verdict.GetIcon(verdictState)} {coverageState}";
+                    return $"{verdict.GetIcon()} {coverageState}";
                 case "mobile":
                     var mobileIssues = drv[nameof(ReportItem.MobileIssues)] as IEnumerable<MobileUsabilityIssue>;
-                    var mobileVerdict = ValidationHelper.GetString(drv[nameof(ReportItem.MobileVerdict)], String.Empty);
+                    var mobileVerdict = new Verdict(ValidationHelper.GetString(drv[nameof(ReportItem.MobileVerdict)], Verdict.VERDICT_UNSPECIFIED));
                     if (mobileIssues == null || mobileIssues.Count() == 0)
                     {
-                        return Verdict.GetIcon(mobileVerdict);
+                        return mobileVerdict.GetIcon();
                     }
 
                     var mobileIssueText = new StringBuilder();
                     foreach (var issue in mobileIssues)
                     {
-                        mobileIssueText.Append(Severity.GetIcon(issue.Severity))
+                        mobileIssueText.Append(new Severity(issue.Severity).GetIcon())
                             .Append(" ")
                             .Append(issue.Message)
                             .Append("<br/>");
@@ -282,16 +301,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                     
                 case "rich":
                     var richIssues = drv[nameof(ReportItem.RichIssues)] as IEnumerable<RichResultsIssue>;
-                    var richResultsVerdict = ValidationHelper.GetString(drv[nameof(ReportItem.RichResultsVerdict)], String.Empty);
+                    var richResultsVerdict = new Verdict(ValidationHelper.GetString(drv[nameof(ReportItem.RichResultsVerdict)], Verdict.VERDICT_UNSPECIFIED));
                     if (richIssues == null || richIssues.Count() == 0)
                     {
-                        return Verdict.GetIcon(richResultsVerdict);
+                        return richResultsVerdict.GetIcon();
                     }
 
                     var richIssueText = new StringBuilder();
                     foreach (var issue in richIssues)
                     {
-                        richIssueText.Append(Severity.GetIcon(issue.Severity))
+                        richIssueText.Append(new Severity(issue.Severity).GetIcon())
                             .Append(" ")
                             .Append(issue.IssueMessage)
                             .Append("<br/>");

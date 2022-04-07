@@ -10,6 +10,13 @@ using System;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
+    /// <summary>
+    /// A custom module UI page which displays a content tree, a UniGrid reporting select Google Search Console
+    /// indexing details of a selected page's direct children, the full Google Search Console indexing details of
+    /// a selected page, and buttons for performing Google indexing API functions.<br/>
+    /// If the Google OAuth token doesn't exist in the /App_Data folder, a button is displayed to initiate the
+    /// authentication process.
+    /// </summary>
     public partial class SearchConsoleLayout : CMSPage
     {
         protected void Page_Load(object sender, EventArgs e)
@@ -21,6 +28,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
                 btnAuth.Visible = true;
                 return;
             }
+
+            btnAuth.StopProcessing = true;
 
             var selectedNodeId = QueryHelper.GetInteger("selectednodeid", 0);
             var selectedCulture = QueryHelper.GetString("selectedculture", String.Empty);
@@ -52,10 +61,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
 
             consoleDetails.StopProcessing = false;
             consoleDetails.SelectedNode = selectedNode;
-            consoleDetails.SelectedCulture = selectedCulture;
             consoleReport.StopProcessing = false;
             consoleReport.SelectedNode = selectedNode;
-            consoleReport.SelectedCulture = selectedCulture;
 
             var url = DocumentURLProvider.GetAbsoluteUrl(selectedNode);
             if (String.IsNullOrEmpty(url))
