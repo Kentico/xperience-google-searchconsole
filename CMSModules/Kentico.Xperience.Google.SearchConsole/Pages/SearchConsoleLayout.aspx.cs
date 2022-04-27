@@ -11,11 +11,11 @@ using System;
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
     /// <summary>
-    /// A custom module UI page which displays a content tree, a UniGrid reporting select Google Search Console
+    /// <para>A custom module UI page which displays a content tree, a UniGrid reporting select Google Search Console
     /// indexing details of a selected page's direct children, the full Google Search Console indexing details of
-    /// a selected page, and buttons for performing Google indexing API functions.<br/>
-    /// If the Google OAuth token doesn't exist in the /App_Data folder, a button is displayed to initiate the
-    /// authentication process.
+    /// a selected page, and buttons for performing Google indexing API functions.</para>
+    /// <para>If the Google OAuth token doesn't exist in the /App_Data folder, a button is displayed to initiate the
+    /// authentication process.</para>
     /// </summary>
     public partial class SearchConsoleLayout : CMSPage
     {
