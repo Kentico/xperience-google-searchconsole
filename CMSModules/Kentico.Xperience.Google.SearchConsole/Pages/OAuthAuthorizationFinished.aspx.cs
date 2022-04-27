@@ -19,7 +19,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
                 var message = QueryHelper.GetString("message", String.Empty);
                 pnlSuccess.Visible = false;
                 pnlError.Visible = true;
-                ltlErrorMessage.Text = message;
+                ltlErrorMessage.Text = HTMLHelper.HTMLEncode(message);
             }
         }
     }

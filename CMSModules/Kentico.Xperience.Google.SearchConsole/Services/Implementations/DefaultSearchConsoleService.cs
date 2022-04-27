@@ -99,7 +99,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             var userCredential = GetUserCredential();
             if (userCredential == null)
             {
-                var error = $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.";
+                var error = $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.FileStorePhysicalPath}.";
                 eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetInspectionResults), error);
                 requestResults.FailedRequests = urls.Count();
                 requestResults.Errors.Add(error);
@@ -209,7 +209,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             if (userCredential == null)
             {
                 eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetSite),
-                    $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.");
+                    $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.FileStorePhysicalPath}.");
                 return null;
             }
 
@@ -236,7 +236,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             var userCredential = GetUserCredential();
             if (userCredential == null)
             {
-                var error = $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.fileStorePhysicalPath}.";
+                var error = $"Unable to retrieve user credentials. Please ensure that client_secret.json and the authentication token are present in {SearchConsoleConstants.FileStorePhysicalPath}.";
                 eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexing), error);
                 requestResults.FailedRequests = urls.Count();
                 requestResults.Errors.Add(error);
@@ -303,10 +303,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         /// <returns>The authorization flow, or null if there are issues retrieving the client secrets.</returns>
         private OfflineAccessGoogleAuthorizationCodeFlow InitializeAuthorizationFlow()
         {
-            var credentialPath = $"{SearchConsoleConstants.fileStorePhysicalPath}\\{SearchConsoleConstants.CREDENTIALS_FILENAME}";
+            var credentialPath = $"{SearchConsoleConstants.FileStorePhysicalPath}\\{SearchConsoleConstants.CREDENTIALS_FILENAME}";
             if (!File.Exists(credentialPath))
             {
-                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(InitializeAuthorizationFlow), $"Google OAuth credential file '{SearchConsoleConstants.CREDENTIALS_FILENAME}' not found in the {SearchConsoleConstants.fileStorePhysicalPath} directory.");
+                eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(InitializeAuthorizationFlow), $"Google OAuth credential file '{SearchConsoleConstants.CREDENTIALS_FILENAME}' not found in the {SearchConsoleConstants.FileStorePhysicalPath} directory.");
                 return null;
             }
 
@@ -321,7 +321,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
             {
                 IncludeGrantedScopes = true,
                 ClientSecrets = credentials.Secrets,
-                DataStore = new FileDataStore(SearchConsoleConstants.fileStorePhysicalPath, true),
+                DataStore = new FileDataStore(SearchConsoleConstants.FileStorePhysicalPath, true),
                 Scopes = new string[]
                 {
                     IndexingService.Scope.Indexing,
