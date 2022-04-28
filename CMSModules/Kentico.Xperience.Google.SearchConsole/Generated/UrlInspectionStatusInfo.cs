@@ -26,7 +26,6 @@ namespace Kentico.Xperience.Google.SearchConsole
         /// <summary>
         /// Type information.
         /// </summary>
-#warning "You will need to configure the type info."
         public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(UrlInspectionStatusInfoProvider), OBJECT_TYPE, "GoogleSearchConsole.UrlInspectionStatus", "PageIndexStatusID", null, null, null, null, null, null, null, null)
         {
             ModuleName = "Kentico.Xperience.Google.SearchConsole",
