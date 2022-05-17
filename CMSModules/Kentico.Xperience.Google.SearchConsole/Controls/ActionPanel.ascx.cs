@@ -1,6 +1,7 @@
 ﻿using CMS.Base.Web.UI;
 using CMS.Core;
 using CMS.DocumentEngine;
+using CMS.Helpers;
 
 using Kentico.Xperience.Google.SearchConsole.Services;
 
@@ -124,7 +125,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             var result = searchConsoleService.GetInspectionResults(new string[] { url }, SelectedNode.DocumentCulture);
             if (result.SuccessfulRequests == 1)
             {
-                ShowInformation("Refresh successful.");
+                var redirectUrl = URLHelper.AddParameterToUrl(RequestContext.CurrentURL, "refreshed", "1");
+                redirectUrl = URLHelper.RemoveParameterFromUrl(redirectUrl, "indexed");
+                URLHelper.Redirect(redirectUrl);
             }
             else
             {
@@ -156,7 +159,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
             else
             {
-                ShowInformation("Refresh successful.");
+                var redirectUrl = URLHelper.AddParameterToUrl(RequestContext.CurrentURL, "refreshed", "1");
+                redirectUrl = URLHelper.RemoveParameterFromUrl(redirectUrl, "indexed");
+                URLHelper.Redirect(redirectUrl);
             }
         }
 
@@ -171,7 +176,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             var result = searchConsoleService.RequestIndexing(new string[] { url }, SelectedNode.DocumentCulture);
             if (result.SuccessfulRequests == 1)
             {
-                ShowInformation("Indexing request submitted. Please check Google Search Console or refresh the page status in several days.");
+                var redirectUrl = URLHelper.AddParameterToUrl(RequestContext.CurrentURL, "indexed", "1");
+                redirectUrl = URLHelper.RemoveParameterFromUrl(redirectUrl, "refreshed");
+                URLHelper.Redirect(redirectUrl);
             }
             else
             {
@@ -203,7 +210,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             }
             else
             {
-                ShowInformation("Indexing requests submitted. Please check Google Search Console or refresh the page statuses in several days.");
+                var redirectUrl = URLHelper.AddParameterToUrl(RequestContext.CurrentURL, "indexed", "1");
+                redirectUrl = URLHelper.RemoveParameterFromUrl(redirectUrl, "refreshed");
+                URLHelper.Redirect(redirectUrl);
             }
         }
     }

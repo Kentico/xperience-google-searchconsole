@@ -76,6 +76,16 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
                 actionPanel.AllowIndexSection = false;
                 actionPanel.AllowRefreshSection = false;
             }
+
+            // Show success messages for ActionPanel buttons
+            if (QueryHelper.GetInteger("refreshed", 0) == 1)
+            {
+                ShowInformation("Refresh successful.");
+            }
+            if (QueryHelper.GetInteger("indexed", 0) == 1)
+            {
+                ShowInformation("Indexing requests submitted. Please check Google Search Console or refresh the page status in several days.");
+            }
         }
     }
 }

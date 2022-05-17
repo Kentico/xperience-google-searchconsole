@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using CMS;
 using CMS.DataEngine;
 using CMS.Helpers;
+
 using Kentico.Xperience.Google.SearchConsole;
 
 [assembly: RegisterObjectType(typeof(UrlInspectionStatusInfo), UrlInspectionStatusInfo.OBJECT_TYPE)]

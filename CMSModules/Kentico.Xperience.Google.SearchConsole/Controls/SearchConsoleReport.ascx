@@ -16,10 +16,10 @@
             </GridActions>
             <GridColumns>
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" Wrap="false" />
-                <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last refresh" Wrap="false" />
                 <ug:Column runat="server" Source="##ALL##" Caption="Coverage" ExternalSourceName="coverage" Wrap="false" />
                 <ug:Column runat="server" Source="##ALL##" Caption="Mobile usability" ExternalSourceName="mobile" Wrap="false" />
                 <ug:Column runat="server" Source="##ALL##" Caption="Rich results" ExternalSourceName="rich" Wrap="false" />
+                <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last refresh" Wrap="false" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.LastCrawl) %>" Caption="Last crawl" Wrap="false" />
             </GridColumns>
         </cms:UniGrid>
