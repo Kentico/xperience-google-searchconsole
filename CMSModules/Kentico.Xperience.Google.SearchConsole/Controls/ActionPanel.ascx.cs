@@ -99,19 +99,6 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             btnGetSectionStatus.Enabled = AllowRefreshSection;
             btnIndexSingle.Enabled = AllowIndexSingle;
             btnIndexSection.Enabled = AllowIndexSection;
-
-            var singleAlias = $"/{SelectedNode.NodeAlias}";
-            var sectionAlias = $"/{SelectedNode.NodeAlias}/%";
-            if (SelectedNode.IsRoot())
-            {
-                singleAlias = "page";
-                sectionAlias = "/%";
-            }
-
-            btnGetSingleStatus.Text = $"Refresh {singleAlias}";
-            btnGetSectionStatus.Text = $"Refresh {sectionAlias}";
-            btnIndexSingle.Text = $"Index {singleAlias}";
-            btnIndexSection.Text = $"Index {sectionAlias}";
         }
 
 

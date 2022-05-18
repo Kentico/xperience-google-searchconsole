@@ -31,7 +31,7 @@
         <%# GetSelectedNodeUrl() %>
     </p>
     <p style="padding-top:15px">
-        <b>Status refreshed on:</b> <%# GetLastRefreshTime() %><br />
+        <b>Data refreshed on:</b> <%# GetLastRefreshTime() %><br />
         <b>Indexing requested on:</b> <%# GetIndexingRequestTime() %>
     </p>
     <div class="DetailTable">

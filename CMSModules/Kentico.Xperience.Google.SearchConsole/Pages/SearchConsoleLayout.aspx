@@ -17,8 +17,10 @@
                 </div>
             </asp:Panel>
             <div style="display:inline-flex;width:100%">
-                <uc:ContentTree ID="contentTree" runat="server" />
-                <div style="min-width:60%;margin-left:70px;padding-bottom:100px">
+                <div style="width:300px;overflow:hidden">
+                    <uc:ContentTree ID="contentTree" runat="server" />
+                </div>
+                <div style="min-width:60%;margin-left:40px;padding-bottom:100px">
                     <uc:ConsoleReport ID="consoleReport" runat="server" StopProcessing="true" />
                     <div style="padding-top:10px">
                         <uc:ConsoleDetails ID="consoleDetails" runat="server" StopProcessing="true" />

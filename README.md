@@ -51,13 +51,13 @@ The __report__ section displays the details of the selected page's _direct_ chil
 
 The __overview__ section displays all Google Search Console data retrieved for the selected page only. You can also see the last time the data for the page was [refreshed](#refreshing-page-statuses) and when [indexing](#request-page-indexing) was requested.
 
-## Refreshing page statuses
+## Refreshing page data
 
 Google has [quotas](https://cloud.google.com/docs/quota) for their APIs and services which you should consider when using this integration. For example, the limitation for [the API we use](https://developers.google.com/webmaster-tools/limits#url-inspection) for refreshing is 600 queries per minute and 2,000 queries per day. To reduce the chances that your quota will be exceeded while using this integration, the data for each page is stored in the Xperience database and is _only_ retrieved from Google Search Console if you click the __Refresh__ buttons:
 
 ![Buttons](/Assets/refreshbuttons.png)
 
-This means that, on the first time the application is accessed, all your pages will display a black question mark indicating that there's no data for the page. You will need to begin refreshing statuses for your pages, but make sure to keep the API quota in mind while doing so. Once refreshed, the data will not be updated until a new refresh is performed, but you can use the "Last refresh" column in the __report__ or "Status refreshed on" value in the __overview__ to check how stale the data is.
+This means that, on the first time the application is accessed, all your pages will display a black question mark indicating that there's no data for the page. You will need to begin refreshing data for your pages, but make sure to keep the API quota in mind while doing so. Once refreshed, the data will not be updated until a new refresh is performed, but you can use the "Last data refresh" column in the __report__ or "Data refreshed on" value in the __overview__ to check how stale the data is.
 
 ## Request page indexing
 
