@@ -12,7 +12,7 @@ This custom module allows Xperience users to view the indexed status of your Xpe
 
 1. Open your CMS project in __Visual Studio__.
 1. Install the _Google.Apis.SearchConsole.v1_ and _Google.Apis.Indexing.v3_ NuGet packages in the CMS project. This integration was tested using the __1.56.0.xx__ versions of both libraries.
-1. Download the latest export package from the [/CMSSiteUtils/Export](/CMSSiteUtils/Export) folder.
+1. Download the latest _"Kentico.Xperience.Google.SearchConsole"_ package from the [Releases](https://github.com/Kentico/xperience-google-searchconsole/releases).
 1. In the Xperience adminstration, open the __Sites__ application.
 1. [Import](https://docs.xperience.io/deploying-websites/exporting-and-importing-sites/importing-a-site-or-objects) the downloaded package with the __Import files__ and __Import code files__ [settings](https://docs.xperience.io/deploying-websites/exporting-and-importing-sites/importing-a-site-or-objects#Importingasiteorobjects-Import-Objectselectionsettings) enabled.
 1. Perform the [necessary steps](https://docs.xperience.io/deploying-websites/exporting-and-importing-sites/importing-a-site-or-objects#Importingasiteorobjects-Importingpackageswithfiles) to include the following imported folder in your project:
