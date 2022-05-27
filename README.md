@@ -43,9 +43,7 @@ After [installing](#import-the-custom-module) and [authenticating](#authenticate
 
 ![Module sections](/Assets/modulesections.png)
 
-The __content tree__ displays all pages of your site and their overall Google Search Console indexing status. Pages that do not have live site URLs will not have an icon next to them. The possible icons are:
-
-![Icon legend](/Assets/legend.png)
+The __content tree__ displays all pages of your site and their overall Google Search Console indexing status. Pages that do not have live site URLs will not have an icon next to them. A black "minus" symbol indicates the data hasn't been [refreshed](#refreshing-page-data) yet. If the data has been refreshed, you will see a green, yellow, or red icon indicating the indexed status of the page.
 
 The __report__ section displays the details of the selected page's _direct_ children. The "Coverage," "Mobile usability," and "Rich results" columns will list any errors or warnings with the page, or a green checkmark if it is valid. Click the green "eye" icon to select that page from the content tree on the left and see its overview and report. The "arrow" icon will open the page's live site URL. You can export the details of these pages in multiple formats (e.g. Excel) by clicking the menu in the top-left of the grid. For example, if your articles have some mobile usability errors that need to be resolved by a front-end developer, you can export a full report of your article's issues as an Excel file and email it to your developers to be fixed!
 
@@ -53,16 +51,12 @@ The __overview__ section displays all Google Search Console data retrieved for t
 
 ## Refreshing page data
 
-Google has [quotas](https://cloud.google.com/docs/quota) for their APIs and services which you should consider when using this integration. For example, the limitation for [the API we use](https://developers.google.com/webmaster-tools/limits#url-inspection) for refreshing is 600 queries per minute and 2,000 queries per day. To reduce the chances that your quota will be exceeded while using this integration, the data for each page is stored in the Xperience database and is _only_ retrieved from Google Search Console if you click the __Refresh__ buttons:
-
-![Buttons](/Assets/refreshbuttons.png)
+Google has [quotas](https://cloud.google.com/docs/quota) for their APIs and services which you should consider when using this integration. For example, the limitation for [the API we use](https://developers.google.com/webmaster-tools/limits#url-inspection) for refreshing is 600 queries per minute and 2,000 queries per day. To reduce the chances that your quota will be exceeded while using this integration, the data for each page is stored in the Xperience database and is _only_ retrieved from Google Search Console if you use the __Refresh data__ action below the report.
 
 This means that, on the first time the application is accessed, all your pages will display a black question mark indicating that there's no data for the page. You will need to begin refreshing data for your pages, but make sure to keep the API quota in mind while doing so. Once refreshed, the data will not be updated until a new refresh is performed, but you can use the "Last data refresh" column in the __report__ or "Data refreshed on" value in the __overview__ to check how stale the data is.
 
 ## Request page indexing
 
-If a page isn't indexed in Google Search Console, or it needs to be re-indexed after a recent update, you can use the __Index__ buttons to request indexing:
-
-![Index buttons](/Assets/indexbuttons.png)
+If a page isn't indexed in Google Search Console, or it needs to be re-indexed after a recent update, you can use the __Request indexing__ action below the report to request indexing.
 
 Note that these buttons only _request_ that your pages be indexed, but the actual indexing by Google can take several days. After requesting indexing, you will need to wait a few days and either [refresh](#refreshing-page-statuses) the data, or view the status in Google Search Console directly. Similarly to refreshing statuses, [the API we use](https://developers.google.com/search/apis/indexing-api/v3/quota-pricing) for requesting page indexing has limitations. By default, you can make 200 indexing requests per day, so only request indexing when necessary, and be sure to check the "Indexing requested on" value on a page's __overview__ to make sure it hasn't already been requested recently.

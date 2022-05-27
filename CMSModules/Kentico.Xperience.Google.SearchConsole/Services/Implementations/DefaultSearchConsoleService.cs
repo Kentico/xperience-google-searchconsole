@@ -42,6 +42,9 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         private IUrlInspectionStatusInfoProvider urlInspectionStatusInfoProvider;
 
 
+        /// <summary>
+        /// The process for authorizing access to Google APIs.
+        /// </summary>
         public OfflineAccessGoogleAuthorizationCodeFlow GoogleAuthorizationCodeFlow
         {
             get
@@ -93,7 +96,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         }
 
 
-        public RequestResults GetInspectionResults(IEnumerable<string> urls, string cultureCode)
+        public RequestResults GetInspectionResults(IEnumerable<string> urls, string cultureCode, Action<string> successCallback = null, Action<string> errorCallback = null)
         {
             var requestResults = new RequestResults();
             var userCredential = GetUserCredential();
@@ -140,8 +143,17 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
                         requestResults.FailedRequests++;
                         requestResults.Errors.Add(error.Message);
                         eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(GetInspectionResults), error.Message);
+                        if (errorCallback != null)
+                        {
+                            errorCallback(error.Message);
+                        }
 
                         return;
+                    }
+
+                    if (successCallback != null)
+                    {
+                        successCallback(url);
                     }
 
                     var existingInfo = urlInspectionStatusInfoProvider.Get()
@@ -230,7 +242,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         }
 
 
-        public RequestResults RequestIndexing(IEnumerable<string> urls, string cultureCode)
+        public RequestResults RequestIndexing(IEnumerable<string> urls, string cultureCode, Action<string> successCallback = null, Action<string> errorCallback = null)
         {
             var requestResults = new RequestResults();
             var userCredential = GetUserCredential();
@@ -265,8 +277,17 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
                         requestResults.FailedRequests++;
                         requestResults.Errors.Add(error.Message);
                         eventLogService.LogError(nameof(DefaultSearchConsoleService), nameof(RequestIndexing), error.Message);
+                        if (errorCallback != null)
+                        {
+                            errorCallback(error.Message);
+                        }
 
                         return;
+                    }
+
+                    if (successCallback != null)
+                    {
+                        successCallback(url);
                     }
 
                     var existingInfo = urlInspectionStatusInfoProvider.Get()

@@ -11,61 +11,88 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
 
 
-    public partial class SearchConsoleLayout
+    public partial class SearchConsoleReportMassAction
     {
 
         /// <summary>
-        /// btnAuth control.
+        /// pnlLog control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.OAuthButton btnAuth;
+        protected global::System.Web.UI.WebControls.Panel pnlLog;
 
         /// <summary>
-        /// pnlMain control.
+        /// ctlAsyncLog control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlMain;
+        protected global::CMSAdminControls_AsyncLogDialog ctlAsyncLog;
 
         /// <summary>
-        /// contentTree control.
+        /// pnlContent control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleContentTree contentTree;
+        protected global::System.Web.UI.WebControls.Panel pnlContent;
 
         /// <summary>
-        /// consoleReport control.
+        /// pnlMessagePlaceholder control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsoleReport consoleReport;
+        protected global::CMS.Base.Web.UI.MessagesPlaceHolder pnlMessagePlaceholder;
 
         /// <summary>
-        /// ctrlMassActions control.
+        /// pnlDelete control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CMSAdminControls_UI_UniGrid_Controls_MassActions ctrlMassActions;
+        protected global::System.Web.UI.WebControls.Panel pnlDelete;
 
         /// <summary>
-        /// consoleDetails control.
+        /// headAnnouncement control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Kentico.Xperience.Google.SearchConsole.Controls.SearchConsolePageDetails consoleDetails;
+        protected global::CMS.Base.Web.UI.LocalizedHeading headAnnouncement;
+
+        /// <summary>
+        /// pnlItemList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlItemList;
+
+        /// <summary>
+        /// lblItems control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblItems;
+
+        /// <summary>
+        /// btnCancel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::CMS.Base.Web.UI.LocalizedButton btnCancel;
     }
 }

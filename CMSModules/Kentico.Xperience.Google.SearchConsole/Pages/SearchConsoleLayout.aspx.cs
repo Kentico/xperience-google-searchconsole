@@ -4,9 +4,12 @@ using CMS.Helpers;
 using CMS.SiteProvider;
 using CMS.UIControls;
 
+using Kentico.Xperience.Google.SearchConsole.Constants;
+using Kentico.Xperience.Google.SearchConsole.Models;
 using Kentico.Xperience.Google.SearchConsole.Services;
 
 using System;
+using System.Linq;
 
 namespace Kentico.Xperience.Google.SearchConsole.Pages
 {
@@ -19,7 +22,42 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
     /// </summary>
     public partial class SearchConsoleLayout : CMSPage
     {
-        protected void Page_Load(object sender, EventArgs e)
+        private TreeNode selectedNode;
+
+
+        protected override void OnPreLoad(EventArgs e)
+        {
+            base.OnPreLoad(e);
+
+            var selectedNodeId = QueryHelper.GetInteger("selectednodeid", 0);
+            var selectedCulture = QueryHelper.GetString("selectedculture", String.Empty);
+            if (String.IsNullOrEmpty(selectedCulture))
+            {
+                selectedCulture = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
+            }
+
+            if (selectedNodeId == 0)
+            {
+                selectedNode = new TreeProvider().SelectSingleNode(SiteContext.CurrentSiteName, "/", selectedCulture, true, SystemDocumentTypes.Root, false);
+            }
+            else
+            {
+                selectedNode = new TreeProvider().SelectSingleNode(selectedNodeId, selectedCulture);
+            }
+
+            InitalizeLayout();
+            LoadGridMassActions();
+        }
+
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            ctrlMassActions.Visible = !consoleReport.StopProcessing;
+        }
+
+
+        private void InitalizeLayout()
         {
             var searchConsoleService = Service.Resolve<ISearchConsoleService>();
             if (searchConsoleService.GetUserCredential() == null)
@@ -30,32 +68,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
             }
 
             btnAuth.StopProcessing = true;
-
-            var selectedNodeId = QueryHelper.GetInteger("selectednodeid", 0);
-            var selectedCulture = QueryHelper.GetString("selectedculture", String.Empty);
-            if (String.IsNullOrEmpty(selectedCulture))
-            {
-                selectedCulture = CultureHelper.GetDefaultCultureCode(SiteContext.CurrentSiteName);
-            }
-
-            TreeNode selectedNode;
-            if (selectedNodeId == 0)
-            {
-                selectedNode = new TreeProvider().SelectSingleNode(SiteContext.CurrentSiteName, "/", selectedCulture, true, SystemDocumentTypes.Root, false);
-            }
-            else
-            {
-                selectedNode = new TreeProvider().SelectSingleNode(selectedNodeId, selectedCulture);
-            }
-
-            actionPanel.SelectedNode = selectedNode;
-            contentTree.SelectedCulture = selectedCulture;
-            contentTree.SelectedNodeID = selectedNodeId;
-
+            contentTree.SelectedCulture = selectedNode.DocumentCulture;
+            contentTree.SelectedNodeID = selectedNode.NodeID;
             if (selectedNode == null)
             {
                 ShowInformation("The selected page doesn't exist in the selected culture.");
-                pnlActions.Visible = false;
                 return;
             }
 
@@ -63,29 +80,63 @@ namespace Kentico.Xperience.Google.SearchConsole.Pages
             consoleDetails.SelectedNode = selectedNode;
             consoleReport.StopProcessing = false;
             consoleReport.SelectedNode = selectedNode;
+        }
 
-            var url = DocumentURLProvider.GetAbsoluteUrl(selectedNode);
-            if (String.IsNullOrEmpty(url))
-            {
-                actionPanel.AllowIndexSingle = false;
-                actionPanel.AllowRefreshSingle = false;
-            }
 
-            if (selectedNode.Children.Count == 0)
+        private void LoadGridMassActions()
+        {
+            Func<Func<SearchConsoleMassActionParameters, string>, string, string, CreateUrlDelegate> functionConverter = (generateActionFunction, actionName, title) =>
             {
-                actionPanel.AllowIndexSection = false;
-                actionPanel.AllowRefreshSection = false;
-            }
+                return (scope, selectedNodeIDs, parameters) =>
+                {
+                    var searchConsoleMassActionParameters = new SearchConsoleMassActionParameters
+                    {
+                        ActionName = actionName,
+                        Title = title,
+                        NodeIDs = scope == MassActionScopeEnum.AllItems ? selectedNode.Children.Select(i => i.NodeID).ToList() : selectedNodeIDs,
+                        Culture = selectedNode.DocumentCulture,
+                        ReloadScript = consoleReport.GridReport.GetReloadScript()
+                    };
+                    return generateActionFunction(searchConsoleMassActionParameters);
+                };
+            };
 
-            // Show success messages for ActionPanel buttons
-            if (QueryHelper.GetInteger("refreshed", 0) == 1)
-            {
-                ShowInformation("Refresh successful.");
-            }
-            if (QueryHelper.GetInteger("indexed", 0) == 1)
-            {
-                ShowInformation("Indexing requests submitted. Please check Google Search Console or refresh the page status in several days.");
-            }
+            ctrlMassActions.SelectedItemsClientID = consoleReport.GridReport.GetSelectionFieldClientID();
+            ctrlMassActions.SelectedItemsResourceString = "Selected pages";
+            ctrlMassActions.AllItemsResourceString = "All pages";
+            ctrlMassActions.AddMassActions(
+                new MassActionItem
+                {
+                    ActionType = MassActionTypeEnum.OpenModal,
+                    CodeName = "Refresh data",
+                    CreateUrl = functionConverter(GetMassActionUrl, SearchConsoleConstants.ACTION_REFRESH_DATA, "Refresh data")
+                },
+                new MassActionItem
+                {
+                    ActionType = MassActionTypeEnum.OpenModal,
+                    CodeName = "Request indexing",
+                    CreateUrl = functionConverter(GetMassActionUrl, SearchConsoleConstants.ACTION_REQUEST_INDEXING, "Request indexing")
+                }
+            );
+        }
+
+
+        /// <summary>
+        /// Stores the <paramref name="searchConsoleMassActionParameters"/> in session and generates the absolute URL
+        /// to the mass action modal window.
+        /// </summary>
+        /// <param name="searchConsoleMassActionParameters">Parameters related to the chosen mass action and selected pages.</param>
+        /// <returns></returns>
+        private string GetMassActionUrl(SearchConsoleMassActionParameters searchConsoleMassActionParameters)
+        {
+            var paramsIdentifier = Guid.NewGuid().ToString();
+            WindowHelper.Add(paramsIdentifier, searchConsoleMassActionParameters);
+
+            var url = URLHelper.ResolveUrl(SearchConsoleConstants.URL_MASSACTION);
+            url = URLHelper.AddParameterToUrl(url, "parameters", paramsIdentifier);
+            url = URLHelper.AddParameterToUrl(url, "hash", QueryHelper.GetHash(URLHelper.GetQuery(url)));
+
+            return url;
         }
     }
 }

@@ -5,6 +5,7 @@ using Kentico.Xperience.Google.SearchConsole.Models;
 using Kentico.Xperience.Google.SearchConsole.Constants;
 
 using System.Collections.Generic;
+using System;
 
 namespace Kentico.Xperience.Google.SearchConsole.Services
 {
@@ -40,9 +41,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         /// </summary>
         /// <param name="urls">The live site URLs to retrieve the indexing status for.</param>
         /// <param name="cultureCode">The culture code of the <paramref name="urls"/>.</param>
+        /// <param name="successCallback">The action to call when a URL is successfully processed.</param>
+        /// <param name="errorCallback">The action to call when a URL fails to be processed.</param>
         /// <returns>A <see cref="RequestResults"/> object containing the number of successful/failed requests,
         /// and the errors that were encountered.</returns>
-        RequestResults GetInspectionResults(IEnumerable<string> urls, string cultureCode);
+        RequestResults GetInspectionResults(IEnumerable<string> urls, string cultureCode, Action<string> successCallback = null, Action<string> errorCallback = null);
 
 
         /// <summary>
@@ -68,8 +71,10 @@ namespace Kentico.Xperience.Google.SearchConsole.Services
         /// </summary>
         /// <param name="urls">The live site URLs to index.</param>
         /// <param name="cultureCode">The culture code of the <paramref name="urls"/>.</param>
+        /// <param name="successCallback">The action to call when a URL is successfully processed.</param>
+        /// <param name="errorCallback">The action to call when a URL fails to be processed.</param>
         /// <returns>A <see cref="RequestResults"/> object containing the number of successful/failed requests,
         /// and the errors that were encountered.</returns>
-        RequestResults RequestIndexing(IEnumerable<string> urls, string cultureCode);
+        RequestResults RequestIndexing(IEnumerable<string> urls, string cultureCode, Action<string> successCallback = null, Action<string> errorCallback = null);
     }
 }

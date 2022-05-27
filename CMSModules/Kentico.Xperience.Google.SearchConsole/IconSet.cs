@@ -38,22 +38,12 @@ namespace Kentico.Xperience.Google.SearchConsole
 
 
         /// <summary>
-        /// Gets a font icon indicating an unimportant result.
-        /// </summary>
-        /// <param name="tooltip">The tooltip to display on hover.</param>
-        public static string Ambiguous(string tooltip)
-        {
-            return UIHelper.GetAccessibleIconTag("icon-minus-circle", tooltip, additionalClass: "tn color-blue-100");
-        }
-
-
-        /// <summary>
         /// Gets a font icon indicating an unknown result.
         /// </summary>
         /// <param name="tooltip">The tooltip to display on hover.</param>
         public static string Unknown(string tooltip)
         {
-            return UIHelper.GetAccessibleIconTag("icon-question-circle", tooltip, additionalClass: "tn color-gray-50");
+            return UIHelper.GetAccessibleIconTag("icon-minus-circle", tooltip, additionalClass: "tn color-gray-50");
         }
     }
 }

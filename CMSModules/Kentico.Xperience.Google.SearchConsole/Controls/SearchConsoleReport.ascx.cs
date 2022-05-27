@@ -2,6 +2,7 @@
 using CMS.Core;
 using CMS.DocumentEngine;
 using CMS.Helpers;
+using CMS.UIControls;
 
 using Google.Apis.SearchConsole.v1.Data;
 
@@ -38,6 +39,18 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         }
 
 
+        /// <summary>
+        /// The underlying UniGrid control.
+        /// </summary>
+        public UniGrid GridReport
+        {
+            get
+            {
+                return gridReport;
+            }
+        }
+
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -64,12 +77,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         /// </summary>
         private void InitializeReportGrid()
         {
-            var path = SelectedNode.NodeAliasPath;
-            if (SelectedNode.IsRoot())
-            {
-                path = String.Empty;
-            }
-            ltlHeader.Text = $"Report for section {path}/%";
+            ltlHeader.Text = $"Report for {SelectedNode.NodeAliasPath} section";
 
             gridReport.GridView.Sorting += GridView_Sorting;
             gridReport.OnAction += GridReport_OnAction;
@@ -162,7 +170,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
 
         /// <summary>
-        /// Converts a collection of objects into a <see cref="DataSet"/>.
+        /// Converts a collection of objects into a <see cref="DataSet"/>. Also ensures that <see cref="ReportItem.NodeID"/> is
+        /// the first column of the DataSet for mass action support.
         /// </summary>
         private DataSet ToDataSet<T>(IList<T> list)
         {
@@ -175,7 +184,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             {
                 Type ColType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
 
-                t.Columns.Add(propInfo.Name, ColType);
+                var col = t.Columns.Add(propInfo.Name, ColType);
+                if (col.ColumnName.Equals(nameof(ReportItem.NodeID), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    col.SetOrdinal(0);
+                }
             }
 
             foreach (T item in list)
@@ -221,9 +234,11 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         /// </summary>
         private void GridView_Sorting(object sender, GridViewSortEventArgs e)
         {
-            var columnSortIsAscending = ValidationHelper.GetBoolean(Session[$"REPORT_{e.SortExpression}_ISASCENDING"], true);
+            // Inverse the current sort and store in session
+            var sessionKey = $"REPORT_{e.SortExpression}_ISASCENDING";
+            var columnSortIsAscending = ValidationHelper.GetBoolean(Session[sessionKey], true);
             columnSortIsAscending = !columnSortIsAscending;
-            Session[$"REPORT_{e.SortExpression}_ISASCENDING"] = columnSortIsAscending;
+            Session[sessionKey] = columnSortIsAscending;
 
             if (columnSortIsAscending)
             {
@@ -254,6 +269,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
             var data = GetReportData();
             if (data.Count == 0)
             {
+                StopProcessing = true;
                 pnlReport.Visible = false;
                 return null;
             }

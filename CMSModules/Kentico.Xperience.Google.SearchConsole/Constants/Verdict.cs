@@ -36,7 +36,7 @@
                 case PARTIAL:
                     return IconSet.Warning("Valid with warnings");
                 case NEUTRAL:
-                    return IconSet.Ambiguous("Excluded");
+                    return IconSet.Warning("Excluded");
                 case VERDICT_UNSPECIFIED:
                 default:
                     return IconSet.Unknown("Not fetched");

@@ -1,5 +1,4 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="SearchConsolePageDetails.ascx.cs" Inherits="Kentico.Xperience.Google.SearchConsole.Controls.SearchConsolePageDetails" %>
-<%@ Register TagPrefix="uc" TagName="ActionPanel" Src="~/CMSModules/Kentico.Xperience.Google.SearchConsole/Controls/ActionPanel.ascx" %>
 
 <style>
     .DetailTable {
@@ -49,7 +48,7 @@
                     <td><%# GetSitemapMessage() %></td>
                 </tr>
                 <tr>
-                    <td>Referring URLs</td>
+                    <td style="vertical-align:top">Referring URLs</td>
                     <td><%# GetReferrersMessage() %></td>
                 </tr>
                 <tr>
@@ -82,6 +81,7 @@
                     <td>Canonical URL</td>
                     <td><%# GetUrlMatchMessage() %></td>
                 </tr>
+                <%# GetCanonicalUrls() %>
             </tbody>
         </table>
     </div>

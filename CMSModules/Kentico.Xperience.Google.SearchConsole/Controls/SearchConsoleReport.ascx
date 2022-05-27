@@ -11,8 +11,8 @@
     <div class="cms-bootstrap" style="margin-top:30px">
         <cms:UniGrid ID="gridReport" runat="server" ShowExportMenu="true" EnableViewState="false" IsLiveSite="false">
             <GridActions Parameters="Url">
-                <ug:Action runat="server" Name="open" OnClick="window.open('{0}');return false;" Caption="Open URL" FontIconClass="icon-arrow-right-top-square" FontIconStyle="default" />
-                <ug:Action runat="server" Name="view" CommandArgument="NodeID" Caption="Show overview" FontIconClass="icon-eye" FontIconStyle="allow" />
+                <ug:Action runat="server" Name="open" OnClick="window.open('{0}');return false;" Caption="Open URL" FontIconClass="icon-eye" FontIconStyle="allow" />
+                <ug:Action runat="server" Name="view" CommandArgument="NodeID" Caption="Show overview" FontIconClass="icon-permission-list" FontIconStyle="default" />
             </GridActions>
             <GridColumns>
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.DocumentName) %>" Caption="Name" Wrap="false" />
@@ -22,6 +22,7 @@
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.LastRefresh) %>" Caption="Last data refresh" Wrap="false" />
                 <ug:Column runat="server" Source="<%# nameof(ReportItem.LastCrawl) %>" Caption="Last crawl" Wrap="false" />
             </GridColumns>
+            <GridOptions ShowSelection="true" DisplayFilter="false" />
         </cms:UniGrid>
     </div>
 </asp:Panel>

@@ -78,8 +78,33 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return $"{IconSet.Success("Match")} Match";
             }
 
-            var tooltip = $"User canonical: {userUrl}, Google canonical: {googleUrl}";
-            return $"{IconSet.Error(tooltip)} Mismatch";
+            return $"{IconSet.Error("Mismatch")} Mismatch";
+        }
+
+
+        /// <summary>
+        /// If the canonical URLs don't match, render a table row displaying each URL. Otherwise, display nothing.
+        /// </summary>
+        protected string GetCanonicalUrls()
+        {
+            if (inspectUrlIndexResponse == null)
+            {
+                return "N/A";
+            }
+
+            var userUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical;
+            var googleUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.GoogleCanonical;
+            if (userUrl == null || googleUrl == null)
+            {
+                return String.Empty;
+            }
+
+            if (userUrl == googleUrl)
+            {
+                return String.Empty;
+            }
+
+            return $"<tr><td>User canonical:</td><td>{userUrl}</td></tr><tr><td>Google canonical:</td><td>{googleUrl}</td></tr>";
         }
 
 
@@ -154,7 +179,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null || inspectUrlIndexResponse.InspectionResult.AmpResult == null)
             {
-                return $"{IconSet.Unknown("Unknown")} AMP status has not been evaluated yet.";
+                return $"{IconSet.Unknown("Unknown")} No data available.";
             }
 
             var verdict = new Verdict(inspectUrlIndexResponse.InspectionResult.AmpResult.Verdict);
@@ -192,12 +217,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null || inspectUrlIndexResponse.InspectionResult.RichResultsResult == null)
             {
-                return $"{IconSet.Unknown("Unknown")} Rich results have not been evaluated yet.";
+                return $"{IconSet.Unknown("Unknown")} No data available.";
             }
 
             if (inspectUrlIndexResponse.InspectionResult.RichResultsResult.DetectedItems.Count == 0)
             {
-                return $"{IconSet.Ambiguous("No items detected")} No items detected";
+                return $"{IconSet.Warning("No items detected")} No items detected";
             }
 
             var verdict = new Verdict(inspectUrlIndexResponse.InspectionResult.RichResultsResult.Verdict);
@@ -225,8 +250,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
 
         /// <summary>
-        /// Displays the number of referring URLs for the <see cref="SelectedNode"/> as a clickable link, which opens a
-        /// new dialog window displaying each referring URL.
+        /// Displays up to 5 referring URLs for the <see cref="SelectedNode"/> and if there are more, renders a clickable link
+        /// which opens a new dialog window displaying each referring URL.
         /// </summary>
         protected string GetReferrersMessage()
         {
@@ -237,11 +262,22 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return "None detected";
             }
 
-            var url = UrlResolver.ResolveUrl($"~/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/ReferringUrlsDialog.aspx?inspectionStatusID={inspectionStatus.PageIndexStatusID}");
-            var script = $"function openReferringUrls() {{ modalDialog('{url}', 'openReferringUrls', '900', '600', null); return false; }}";
-            ScriptHelper.RegisterClientScriptBlock(this, GetType(), "openReferringUrls", script, true);
+            var text = new StringBuilder();
+            foreach (var referrer in inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls.Take(5))
+            {
+                text.Append(referrer).Append("<br/>");
+            }
+            
+            if (inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls.Count > 5)
+            {
+                var modalUrl = UrlResolver.ResolveUrl($"~/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/ReferringUrlsDialog.aspx?inspectionStatusID={inspectionStatus.PageIndexStatusID}");
+                var script = $"function openReferringUrls() {{ modalDialog('{modalUrl}', 'openReferringUrls', '900', '600', null); return false; }}";
+                text.Append($"<a href='#' onclick='openReferringUrls()'>Show more...</a>");
 
-            return $"<a href='#' onclick='openReferringUrls()'>{inspectUrlIndexResponse.InspectionResult.IndexStatusResult.ReferringUrls.Count}</a>";
+                ScriptHelper.RegisterClientScriptBlock(this, GetType(), "openReferringUrls", script, true);
+            }
+
+            return text.ToString();
         }
 
 
@@ -347,7 +383,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                         return $"{severity.GetIcon()} {issue.IssueMessage}";
                     });
 
-                    result.Append($"<tr><td><a href='#' onclick=\"$cmsj('#issues-{itemWithIssues.Name}').toggle();return false;\">{itemWithIssues.Name}</a></td><td style='display:none' id='issues-{itemWithIssues.Name}'>{String.Join("<br/>", issues)}</td></tr>");
+                    result.Append($"<tr><td style='vertical-align:top'><a href='#' onclick=\"$cmsj('#issues-{itemWithIssues.Name}').toggle();return false;\">{itemWithIssues.Name}</a></td><td style='display:none' id='issues-{itemWithIssues.Name}'>{String.Join("<br/>", issues)}</td></tr>");
                 }
             }
 

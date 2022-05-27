@@ -8,6 +8,18 @@ namespace Kentico.Xperience.Google.SearchConsole.Constants
     public static class SearchConsoleConstants
     {
         /// <summary>
+        /// The report UniGrid mass action to refresh indexed statuses.
+        /// </summary>
+        public const string ACTION_REFRESH_DATA = "refreshdata";
+
+
+        /// <summary>
+        /// The report UniGrid mass action to request indexing.
+        /// </summary>
+        public const string ACTION_REQUEST_INDEXING = "requestindexing";
+
+
+        /// <summary>
         /// The name of the user utilizing the Google APIs.
         /// </summary>
         public const string DEFAULT_USER = "searchconsoleuser";
@@ -29,6 +41,12 @@ namespace Kentico.Xperience.Google.SearchConsole.Constants
         /// The path of the page to navigate to after obtaining an authentication token (or upon failure).
         /// </summary>
         public const string TOKEN_CALLBACK = "CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthAuthorizationFinished.aspx";
+
+
+        /// <summary>
+        /// The virtual URL of the mass action dialog.
+        /// </summary>
+        public const string URL_MASSACTION = "~/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/SearchConsoleReportMassAction.aspx";
 
 
         /// <summary>
