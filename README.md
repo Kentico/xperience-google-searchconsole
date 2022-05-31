@@ -30,7 +30,7 @@ Before you continue setting up the integration, ensure that your Xperience websi
 1. Create a name, and under the __Authorized redirect URIs__ section, add the following URL: `https://<your Xperience admin>/CMSModules/Kentico.Xperience.Google.SearchConsole/Pages/OAuthCallback.aspx`.
 1. After saving, click the __Download JSON__ button.
 1. Rename the saved file to _client\_secret.json_ and move it into your CMS application's _/CMS/App_Data/CMSModules/Kentico.Xperience.Google.SearchConsole_ folder (you will need to create this folder).
-1. In the Xperience administration UI, open the new __Google search console__ application.
+1. In the Xperience administration UI, open the new __Google Search Console__ application.
 1. Click the __Authorize__ button and follow the process until you see a screen indicating that authentication was successful.
 
 > Note: As you will see in a message on step #6, it may take Google up to 5 minutes for your new credentials to work. If you can't authenticate successfully, please wait and try again.
@@ -39,7 +39,7 @@ After successful authentication, you will see a new token file created in your a
 
 ## Using the custom module
 
-After [installing](#import-the-custom-module) and [authenticating](#authenticate-with-google), Xperience users can access the new __Google search console__ application found in the __Content management__ category. Permission to this application can be configured using standard [module permissions](https://docs.xperience.io/managing-users/configuring-permissions). The application's interface is divided into three sections:
+After [installing](#import-the-custom-module) and [authenticating](#authenticate-with-google), Xperience users can access the new __Google Search Console__ application found in the __Content management__ category. Permission to this application can be configured using standard [module permissions](https://docs.xperience.io/managing-users/configuring-permissions). The application's interface is divided into three sections:
 
 ![Module sections](/Assets/modulesections.png)
 
