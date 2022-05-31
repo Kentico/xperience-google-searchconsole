@@ -1,6 +1,7 @@
 ﻿using CMS.Base.Web.UI;
 using CMS.Core;
 using CMS.DocumentEngine;
+using CMS.Helpers;
 
 using Google.Apis.SearchConsole.v1.Data;
 
@@ -83,7 +84,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
 
 
         /// <summary>
-        /// If the canonical URLs don't match, render a table row displaying each URL. Otherwise, display nothing.
+        /// Renders a table row displaying the Google URL and user-defined URL.
         /// </summary>
         protected string GetCanonicalUrls()
         {
@@ -92,17 +93,8 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
                 return "N/A";
             }
 
-            var userUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical;
-            var googleUrl = inspectUrlIndexResponse.InspectionResult.IndexStatusResult.GoogleCanonical;
-            if (userUrl == null || googleUrl == null)
-            {
-                return String.Empty;
-            }
-
-            if (userUrl == googleUrl)
-            {
-                return String.Empty;
-            }
+            var userUrl = ValidationHelper.GetString(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.UserCanonical, "N/A");
+            var googleUrl = ValidationHelper.GetString(inspectUrlIndexResponse.InspectionResult.IndexStatusResult.GoogleCanonical, "N/A");
 
             return $"<tr><td>User canonical:</td><td>{userUrl}</td></tr><tr><td>Google canonical:</td><td>{googleUrl}</td></tr>";
         }
@@ -195,7 +187,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Controls
         {
             if (inspectUrlIndexResponse == null || inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult == null)
             {
-                return $"{IconSet.Unknown("Unknown")} Mobile usability has not been evaluated yet.";
+                return $"{IconSet.Unknown("Unknown")} No data available.";
             }
 
             var verdict = new Verdict(inspectUrlIndexResponse.InspectionResult.MobileUsabilityResult.Verdict);
