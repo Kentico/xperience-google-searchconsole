@@ -14,7 +14,7 @@
         <cms:MessagesPlaceHolder runat="server" ID="pnlMessagePlaceholder" IsLiveSite="false" />
         <asp:Panel ID="pnlDelete" runat="server" EnableViewState="false">
             <cms:LocalizedHeading runat="server" ID="headAnnouncement" Level="4" EnableViewState="false" />
-            <asp:Panel ID="pnlItemList" runat="server" Visible="True" style="height:100%" CssClass="form-control vertical-scrollable-list content-block-50"
+            <asp:Panel ID="pnlItemList" runat="server" Visible="True" CssClass="form-control vertical-scrollable-list content-block-50"
                 EnableViewState="false">
                 <asp:Label ID="lblItems" runat="server" EnableViewState="true" />
             </asp:Panel>
