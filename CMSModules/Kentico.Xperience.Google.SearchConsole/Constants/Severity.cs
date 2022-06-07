@@ -35,7 +35,7 @@ namespace Kentico.Xperience.Google.SearchConsole.Constants
                     return IconSet.Error("Error");
                 case SEVERITY_UNSPECIFIED:
                 default:
-                    return IconSet.Unknown("Unknown");
+                    return IconSet.Error("Unknown");
             }
         }
 
